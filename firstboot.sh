@@ -40,45 +40,33 @@ MODULE_DIR="$SCRIPT_DIR/modules"
 # --- Verify directory structure ----------------------------------------------
 [ ! -d "$LIB_DIR" ]            && echo "[✗] Cannot find lib/ directory. Expected at: $LIB_DIR" && exit 1
 [ ! -f "$LIB_DIR/common.sh" ]  && echo "[✗] Cannot find lib/common.sh. Expected at: $LIB_DIR/common.sh" && exit 1
+[ ! -f "$LIB_DIR/globals.sh" ] && echo "[✗] Cannot find lib/globals.sh. Expected at: $LIB_DIR/globals.sh" && exit 1
+[ ! -f "$LIB_DIR/status.sh" ]  && echo "[✗] Cannot find lib/status.sh. Expected at: $LIB_DIR/status.sh" && exit 1
 [ ! -d "$MODULE_DIR" ]         && echo "[✗] Cannot find modules/ directory. Expected at: $MODULE_DIR" && exit 1
 
 # --- Load common libs --------------------------------------------------------
 source "$LIB_DIR/common.sh"
+source "$LIB_DIR/globals.sh"
+source "$LIB_DIR/status.sh"
 
-# --- Logging setup -----------------------------------------------------------
-LOG_DIR="/var/log/firstboot"
-mkdir -p "$LOG_DIR"
-LOG_FILE="$LOG_DIR/firstboot-$(date +%Y%m%d-%H%M%S).log"
-
-# Tee all output to log file while still showing on terminal
-exec > >(tee -a "$LOG_FILE") 2>&1
-
-info "Logging to: $LOG_FILE"
 
 # --- Banner ------------------------------------------------------------------
 echo ""
 echo -e "${CYAN}${BOLD}"
 echo "  ╔════════════════════════════════════════════════════════════════════════════╗"
-echo "  ║▓▓▒▒░░                                                                ░░▒▒▓▓║"
-echo "  ╠════════════════════════════════════════════════════════════════════════════╣"
 echo "  ║                               FIRSTBOOT v1.0                               ║"
 echo "  ╠════════════════════════════════════════════════════════════════════════════╣"
 echo "  ║                            Server Setup Toolkit                            ║"
 echo "  ║                              Ubuntu 24.04 LTS                              ║"
-echo "  ║▓▓▒▒░░                                                                ░░▒▒▓▓║"
 echo "  ╚════════════════════════════════════════════════════════════════════════════╝"
 echo -e "${NC}"
 
-# --- Status -------------------------------------------------------------------
-source "$LIB_DIR/status.sh"
+# --- Logging setup -----------------------------------------------------------
+mkdir -p "$LOG_DIR"
+# Tee all output to log file while still showing on terminal
+exec > >(tee -a "$LOG_FILE") 2>&1
 
-# --- Check if FirstBoot has successfully run once already --------------------
-if [ -f /etc/firstboot.complete ]; then
-    warn "This script has been run before on this server."
-    warn "Running again may overwrite existing configuration."
-    read -rp "  Continue anyway? (yes/no): " RERUN
-    [ "$RERUN" != "yes" ] && error "Aborted."
-fi
+info "Logging to: $LOG_FILE"
 
 # --- Detect SSH session IP ---------------------------------------------------
 CURRENT_IP=$(who am i | awk '{print $5}' | tr -d '()')
@@ -90,6 +78,19 @@ fi
 
 info "Your IP detected as: ${BOLD}$CURRENT_IP${NC}"
 export CURRENT_IP
+
+# --- Status -------------------------------------------------------------------
+show_status
+
+
+# --- Check if FirstBoot has successfully run once already --------------------
+if [ -f /etc/firstboot.complete ]; then
+    warn "This script has been run before on this server."
+    warn "Running again may overwrite existing configuration."
+    read -rp "  Continue anyway? (yes/no): " RERUN
+    [ "$RERUN" != "yes" ] && error "Aborted."
+fi
+
 
 # --- Server short name -------------------------------------------------------
 section "Server Identity"
@@ -142,202 +143,6 @@ done
 
 export ADMIN_USER
 
-# --- Component selection -----------------------------------------------------
-section "Select Components"
-
-ROLE_HARDENING=true
-ROLE_MAIL=false
-ROLE_DB=false
-ROLE_WEB=false
-
-HARDENING_DESC="  Installs:  fail2ban, unattended-upgrades, auditd, chrony
-  Does:      Hardens SSH, applies sysctl security settings,
-             configures firewall (UFW), enables automatic
-             security updates and brute force protection."
-
-MAIL_DESC="  Installs:  Postfix, Dovecot, OpenDKIM, Rspamd, Redis, Certbot
-  Does:      Virtual mailboxes via MySQL, DKIM signing,
-             spam filtering, TLS via Let's Encrypt."
-
-DB_DESC="  Installs:  MySQL 8.0
-  Does:      Creates mailserver DB and tables for virtual
-             users, domains, and aliases. Restricts access
-             to private network only."
-
-WEB_DESC="  Installs:  Nginx, Certbot
-  Does:      Configures Nginx for your domain and obtains
-             a TLS certificate via Let's Encrypt."
-
-show_menu() {
-    echo ""
-    [ "$ROLE_HARDENING" = true ] && echo -e "    ${GREEN}[✓]${NC} 1)  Hardening  ${YELLOW}(recommended)${NC}" \
-                                 || echo -e "    ${RED}[ ]${NC} 1)  Hardening  ${RED}(not recommended)${NC}"
-    [ "$ROLE_MAIL" = true ]      && echo -e "    ${GREEN}[✓]${NC} 2)  Mail" \
-                                 || echo    "    [ ] 2)  Mail"
-    [ "$ROLE_DB" = true ]        && echo -e "    ${GREEN}[✓]${NC} 3)  Database" \
-                                 || echo    "    [ ] 3)  Database"
-    [ "$ROLE_WEB" = true ]       && echo -e "    ${GREEN}[✓]${NC} 4)  Web" \
-                                 || echo    "    [ ] 4)  Web"
-    echo ""
-    echo "        0)  Done"
-    echo ""
-    echo "  ── Enter a number to toggle, 0 when done ────────────"
-}
-
-while true; do
-    show_menu
-    read -rp "  Selection: " SELECTION
-
-    case "$SELECTION" in
-        1)
-            if [ "$ROLE_HARDENING" = true ]; then
-                ROLE_HARDENING=false
-                echo ""
-                warn "Hardening deselected — this is not recommended for production servers."
-            else
-                ROLE_HARDENING=true
-                echo ""
-                echo -e "${CYAN}  ── Hardening ────────────────────────────────────────${NC}"
-                echo "$HARDENING_DESC"
-                echo -e "${CYAN}  ────────────────────────────────────────────────────${NC}"
-            fi
-            ;;
-        2)
-            if [ "$ROLE_MAIL" = true ]; then
-                ROLE_MAIL=false
-                echo ""
-                info "Mail deselected"
-            else
-                ROLE_MAIL=true
-                echo ""
-                echo -e "${CYAN}  ── Mail ────────────────────────────────────────────${NC}"
-                echo "$MAIL_DESC"
-                echo -e "${CYAN}  ────────────────────────────────────────────────────${NC}"
-            fi
-            ;;
-        3)
-            if [ "$ROLE_DB" = true ]; then
-                ROLE_DB=false
-                echo ""
-                info "Database deselected"
-            else
-                ROLE_DB=true
-                echo ""
-                echo -e "${CYAN}  ── Database ─────────────────────────────────────────${NC}"
-                echo "$DB_DESC"
-                echo -e "${CYAN}  ────────────────────────────────────────────────────${NC}"
-            fi
-            ;;
-        4)
-            if [ "$ROLE_WEB" = true ]; then
-                ROLE_WEB=false
-                echo ""
-                info "Web deselected"
-            else
-                ROLE_WEB=true
-                echo ""
-                echo -e "${CYAN}  ── Web ─────────────────────────────────────────────${NC}"
-                echo "$WEB_DESC"
-                echo -e "${CYAN}  ────────────────────────────────────────────────────${NC}"
-            fi
-            ;;
-        0)
-            if [ "$ROLE_HARDENING" = false ] && [ "$ROLE_MAIL" = false ] && \
-               [ "$ROLE_DB" = false ] && [ "$ROLE_WEB" = false ]; then
-                warn "No components selected — nothing will be installed."
-                read -rp "  Continue anyway? (yes/no): " CONFIRM_EMPTY
-                [ "$CONFIRM_EMPTY" = "yes" ] && break
-            else
-                break
-            fi
-            ;;
-        *)
-            warn "Invalid selection — enter 1, 2, 3, 4, or 0"
-            ;;
-    esac
-done
-
-export ROLE_HARDENING ROLE_MAIL ROLE_DB ROLE_WEB
-
-
-# --- Mailbox type ------------------------------------------------------------
-# Asked here because the answer affects which modules are installed
-if [ "$ROLE_MAIL" = true ]; then
-	section "Mailbox Type"
-    echo "  How do you want to manage mailboxes?"
-    echo ""
-    echo "    1)  Virtual mailboxes via MySQL  (recommended)"
-    echo "        Users stored in database, scales easily,"
-    echo "        supports multiple domains."
-    echo ""
-    echo "    2)  System users"
-    echo "        Each mailbox is a real Linux user,"
-    echo "        simpler but limited."
-    echo ""
-
-    while true; do
-        read -rp "  Selection: " MAILBOX_TYPE
-        case "$MAILBOX_TYPE" in
-            1)
-                MAILBOX_TYPE="virtual"
-                if [ "$ROLE_DB" = false ]; then
-                    echo ""
-                    warn "Virtual mailboxes require MySQL."
-                    warn "Database install will be added to this setup."
-                    read -rp "  Continue? (yes/no): " CONFIRM_DB
-                    if [ "$CONFIRM_DB" = "yes" ]; then
-                        ROLE_DB=true
-                        info "Database added to install."
-                    else
-                        warn "Cannot use virtual mailboxes without a database."
-                        warn "Reverting to system users."
-                        MAILBOX_TYPE="system"
-                    fi
-                fi
-                break
-                ;;
-            2)
-                MAILBOX_TYPE="system"
-                break
-                ;;
-            *)
-                warn "Invalid selection — enter 1 or 2"
-                ;;
-        esac
-    done
-
-    export MAILBOX_TYPE ROLE_DB
-fi
-
-
-# --- Confirm before running --------------------------------------------------
-section "Ready to Install"
-
-echo ""
-echo -e "  ${BOLD}Server:${NC}        $SERVER_NAME"
-echo -e "  ${BOLD}Admin user:${NC}    $ADMIN_USER"
-echo -e "  ${BOLD}SSH IP:${NC}        $CURRENT_IP"
-echo ""
-echo -e "  ${BOLD}Components to install:${NC}"
-echo ""
-[ "$ROLE_HARDENING" = true ] && echo "    ✓  Hardening  (SSH, sysctl, fail2ban, unattended upgrades, UFW)"
-if [ "$ROLE_MAIL" = true ]; then
-    echo "    ✓  Mail       (Postfix, Dovecot, OpenDKIM, Rspamd, Redis, Certbot)"
-    [ "$MAILBOX_TYPE" = "virtual" ] && echo "                  Mailboxes: Virtual (MySQL)" \
-                                    || echo "                  Mailboxes: System users"
-fi
-[ "$ROLE_DB" = true ]  && echo "    ✓  Database  (MySQL 8.0)"
-[ "$ROLE_WEB" = true ] && echo "    ✓  Web       (Nginx, Certbot)"
-echo ""
-
-while true; do
-    read -rp "  Proceed? (yes/no): " CONFIRM
-    case "$CONFIRM" in
-        yes) break ;;
-        no)  error "Aborted by user." ;;
-        *)   warn "Please enter yes or no." ;;
-    esac
-done
 
 
 # --- Server identity ---------------------------------------------------------

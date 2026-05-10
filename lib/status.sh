@@ -1,32 +1,14 @@
 #!/bin/bash
 # =============================================================================
 # lib/status.sh — System Status Display
-# Sourced by firstboot.sh at startup
+# Sourced by firstboot.sh after globals.sh
 # Do not run directly
 # Author:  Jason Penick
 # GitHub:  https://github.com/64bit-Paperclip/FirstBoot
 # =============================================================================
 
-# --- Helper: check if a package is installed ---------------------------------
-pkg_installed() {
-    dpkg -l "$1" 2>/dev/null | grep -q "^ii"
-}
-
-# --- Helper: check if a service is running -----------------------------------
-svc_status() {
-    local svc="$1"
-    local pkg="${2:-$1}"
-    if ! pkg_installed "$pkg" 2>/dev/null; then
-        echo "not installed"
-    elif systemctl is-active --quiet "$svc" 2>/dev/null; then
-        echo "running"
-    else
-        echo "stopped"
-    fi
-}
-
-# --- Helper: colorize status string ------------------------------------------
-colorize() {
+# --- Helper: colorize a status string ----------------------------------------
+colorize_status() {
     case "$1" in
         "running")       echo -e "${GREEN}running${NC}" ;;
         "stopped")       echo -e "${YELLOW}stopped${NC}" ;;
@@ -36,91 +18,59 @@ colorize() {
     esac
 }
 
-# --- Gather system info ------------------------------------------------------
-SYS_HOSTNAME=$(hostname)
-SYS_OS=$(lsb_release -ds 2>/dev/null || echo "Unknown")
-SYS_IPV4=$(curl -4 -s ifconfig.me)
-SYS_IPV6=$(curl -6 -s ifconfig.me)
-SYS_UPTIME=$(uptime -p 2>/dev/null | sed 's/up //' || echo "Unknown")
-SYS_RAM=$(free -h | awk '/^Mem:/{print $2}')
-SYS_DISK=$(df -h / | awk 'NR==2{print $4}')
-SYS_LOAD=$(uptime | awk -F'load average:' '{print $2}' | xargs)
+# --- show_status -------------------------------------------------------------
+# Refreshes all detection data then displays system info and service statuses
+show_status() {
+    detect_all
 
-# --- Service list (name, service, package) -----------------------------------
-# Format: "Display Name|service-name|package-name"
-SERVICES=(
-    "Apache|apache2|apache2"
-    "Certbot|certbot|certbot"
-    "Docker|docker|docker-ce"
-    "Dovecot|dovecot|dovecot-core"
-    "Fail2ban|fail2ban|fail2ban"
-    "MongoDB|mongod|mongodb-org"
-    "MySQL|mysql|mysql-server"
-    "Nginx|nginx|nginx"
-    "Node.js|node|nodejs"
-    "OpenDKIM|opendkim|opendkim"
-    "PHP-FPM|php-fpm|php-fpm"
-    "PostgreSQL|postgresql|postgresql"
-    "Postfix|postfix|postfix"
-    "Redis|redis-server|redis-server"
-    "Rspamd|rspamd|rspamd"
-    "Supervisor|supervisor|supervisor"
-    "UFW|ufw|ufw"
-)
+    section "System Status"
 
-# --- Build status array ------------------------------------------------------
-declare -a SVC_LABELS
-declare -a SVC_STATUSES
-
-for entry in "${SERVICES[@]}"; do
-    IFS='|' read -r label svc pkg <<< "$entry"
-    status=$(svc_status "$svc" "$pkg")
-    # Special case: certbot has no service, just check if installed
-    if [ "$label" = "Certbot" ] || [ "$label" = "Node.js" ]; then
-        pkg_installed "$pkg" && status="installed" || status="not installed"
-    fi
-    SVC_LABELS+=("$label")
-    SVC_STATUSES+=("$status")
-done
-
-# --- Display -----------------------------------------------------------------
-section "System Status"
-
-echo -e "  ${BOLD}Hostname:${NC}  $SYS_HOSTNAME"
-echo -e "  ${BOLD}OS:${NC}        $SYS_OS"
-echo -e "  ${BOLD}IPv4:${NC}      $SYS_IPV4"
-echo -e "  ${BOLD}IPv6:${NC}      $SYS_IPV6"
-echo -e "  ${BOLD}Uptime:${NC}    $SYS_UPTIME"
-echo -e "  ${BOLD}RAM:${NC}       $SYS_RAM total"
-echo -e "  ${BOLD}Disk:${NC}      $SYS_DISK free"
-echo -e "  ${BOLD}Load:${NC}      $SYS_LOAD"
-echo ""
-echo -e "  ${BOLD}Services:${NC}"
-echo ""
-
-# 2 columns
-# Layout: 2 margin + 14 label + 1 space + 13 status = 30 per column
-# 2 x 30 = 60 chars total — well within 80 char width
-COLS=2
-COUNT=${#SVC_LABELS[@]}
-ROWS=$(( (COUNT + COLS - 1) / COLS ))
- 
-for (( row=0; row<ROWS; row++ )); do
-    printf "  "
-    for (( col=0; col<COLS; col++ )); do
-        idx=$(( row + col * ROWS ))
-        if [ $idx -lt $COUNT ]; then
-            label="${SVC_LABELS[$idx]}:"
-            status="${SVC_STATUSES[$idx]}"
-            colored=$(colorize "$status")
-            # Label fixed at 14 chars
-            # Status column fixed at 24 chars (13 raw + 11 invisible color codes)
-            printf "%-14s %-28s" "$label" "$colored"
-        fi
-    done
+    echo -e "  ${BOLD}Hostname:${NC}  $SYS_HOSTNAME"
+    echo -e "  ${BOLD}OS:${NC}        $SYS_OS"
+    echo -e "  ${BOLD}IPv4:${NC}      $SYS_IPV4"
+    echo -e "  ${BOLD}IPv6:${NC}      $SYS_IPV6"
+    echo -e "  ${BOLD}Uptime:${NC}    $SYS_UPTIME"
+    echo -e "  ${BOLD}RAM:${NC}       $SYS_RAM_TOTAL total, $SYS_RAM_FREE free"
+    echo -e "  ${BOLD}Disk:${NC}      $SYS_DISK_TOTAL total, $SYS_DISK_FREE free"
+    echo -e "  ${BOLD}Load:${NC}      $SYS_LOAD"
+    echo -e "  ${BOLD}CPUs:${NC}      $SYS_CPU_CORES"
     echo ""
-done
+    echo -e "  ${BOLD}Services:${NC}"
+    echo ""
 
-echo ""
-echo "  ── Press any key to continue ────────────────────────"
-read -rn1
+    # Build display arrays from SERVICES and SVC_* variables
+    local -a DISP_LABELS
+    local -a DISP_STATUSES
+
+    for entry in "${SERVICES[@]}"; do
+        IFS='|' read -r label svc pkg svcvar groups install_fn uninstall_fn configure_fn check_fn <<< "$entry"
+        status="${!svcvar:-not installed}"
+        DISP_LABELS+=("$label")
+        DISP_STATUSES+=("$status")
+    done
+
+    # 2 column display
+    COLS=2
+    COUNT=${#DISP_LABELS[@]}
+    ROWS=$(( (COUNT + COLS - 1) / COLS ))
+
+    for (( row=0; row<ROWS; row++ )); do
+        printf "  "
+        for (( col=0; col<COLS; col++ )); do
+            idx=$(( row + col * ROWS ))
+            if [ $idx -lt $COUNT ]; then
+                label="${DISP_LABELS[$idx]}:"
+                status="${DISP_STATUSES[$idx]}"
+                colored=$(colorize_status "$status")
+                printf "%-14s %-27s" "$label" "$colored"
+            fi
+        done
+        echo ""
+    done
+
+    echo ""
+    echo "  ── Press any key to continue ────────────────────────"
+    read -rn1
+}
+
+export -f show_status
