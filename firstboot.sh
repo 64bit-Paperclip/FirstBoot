@@ -78,10 +78,18 @@ export CURRENT_IP
 
 # --- Server identity ---------------------------------------------------------
 section "Server Identity"
- 
+
+CURRENT_HOSTNAME=$(hostname)
+info "Current hostname: ${BOLD}$CURRENT_HOSTNAME${NC}"
+read -rp "  Change hostname? (yes/no): " CHANGE_HOSTNAME
+
+if [ "$CHANGE_HOSTNAME" = "yes" ]; then
+    read -rp "  New hostname (e.g. mail.example.com): " SERVER_HOSTNAME
+    hostnamectl set-hostname "$SERVER_HOSTNAME"
+    info "Hostname set to: $SERVER_HOSTNAME"
+else
+    SERVER_HOSTNAME="$CURRENT_HOSTNAME"
+fi
+
 read -rp "  Short name for this server (e.g. mail, db, web): " SERVER_NAME
-read -rp "  Hostname (e.g. mail.example.com): " SERVER_HOSTNAME
 export SERVER_NAME SERVER_HOSTNAME
- 
-# Set hostname
-hostnamectl set-hostname "$SERVER_HOSTNAME"
