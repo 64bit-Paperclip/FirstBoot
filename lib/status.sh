@@ -115,7 +115,7 @@ for (( row=0; row<ROWS; row++ )); do
             colored=$(colorize "$status")
             # Label fixed at 14 chars
             # Status column fixed at 24 chars (13 raw + 11 invisible color codes)
-            printf "%-14s %-24s" "$label" "$colored"
+            printf "%-14s %-28s" "$label" "$colored"
         fi
     done
     echo ""
