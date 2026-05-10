@@ -61,6 +61,17 @@ source "$LIB_DIR/services.sh"
 source "$LIB_DIR/actions.sh"
 source "$LIB_DIR/status.sh"
 
+# --- Logging setup -----------------------------------------------------------
+mkdir -p "$LOG_DIR"
+# Tee all output to log file while still showing on terminal
+exec > >(tee -a "$LOG_FILE") 2>&1
+
+info "Logging to: $LOG_FILE"
+
+# --- Source all modules ------------------------------------------------------
+source_groups
+source_services
+source_actions
 
 # --- Banner ------------------------------------------------------------------
 echo ""
@@ -73,18 +84,8 @@ echo "  ║                              Ubuntu 24.04 LTS                       
 echo "  ╚════════════════════════════════════════════════════════════════════════════╝"
 echo -e "${NC}"
 
-# --- Logging setup -----------------------------------------------------------
-mkdir -p "$LOG_DIR"
-# Tee all output to log file while still showing on terminal
-exec > >(tee -a "$LOG_FILE") 2>&1
-
-info "Logging to: $LOG_FILE"
 
 
-# --- Source all modules ------------------------------------------------------
-source_groups
-source_services
-source_actions
 
 # --- Status -------------------------------------------------------------------
 show_status

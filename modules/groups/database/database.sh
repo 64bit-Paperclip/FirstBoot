@@ -1,16 +1,16 @@
 #!/bin/bash
 # =============================================================================
-# modules/groups/hardening.sh
+# modules/groups/database.sh
 # Do not run directly
 # Author:  Jason Penick
 # GitHub:  https://github.com/64bit-Paperclip/FirstBoot
 # =============================================================================
 
 # --- Entry function ----------------------------------------------------------
-setup_hardening() {
+setup_database() {
     # TODO: not yet implemented
     warn "Hardening group setup not yet implemented"
 }
 
 # --- Register ----------------------------------------------------------------
-register_group "Hardening|hardening|setup_hardening"
+register_database "Database|database|setup_database"

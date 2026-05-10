@@ -1,0 +1,22 @@
+#!/bin/bash
+# =============================================================================
+# lib/ui.sh — User Interface Functions
+# Sourced by firstboot.sh after globals.sh
+# Do not run directly
+# Author:  Jason Penick
+# GitHub:  https://github.com/64bit-Paperclip/FirstBoot
+# =============================================================================
+
+
+
+draw_main_menu() {
+    section "Main Menu"
+    echo "    1)  System Status"
+    echo "    2)  Setup a Group"
+    echo "    3)  Manage a Service"
+    echo "    4)  Run an Action"
+    echo ""
+    echo "    0)  Exit"
+    echo ""
+    echo "  ────────────────────────────────────────────────────"
+}

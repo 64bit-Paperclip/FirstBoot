@@ -36,10 +36,15 @@ error() {
     exit 1
 }
 
-# section — prints a formatted section header
 section() {
+    local title="$1"
+    local title_len=${#title}
+    local total=80
+    local prefix="  -- "
+    local suffix_len=$(( total - ${#prefix} - title_len - 2 ))
+    local suffix=$(printf '%0.s-' $(seq 1 $suffix_len))
     echo ""
-    echo -e "${CYAN}  ── ${BOLD}$1${NC}${CYAN} ───────────────────────────────────────${NC}"
+    echo -e "${BLUE}${prefix}${WHITE}${BOLD}${title}${NC}${BLUE} ${suffix}${NC}"
     echo ""
 }
 
