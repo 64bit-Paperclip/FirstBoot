@@ -38,11 +38,13 @@ LIB_DIR="$SCRIPT_DIR/lib"
 MODULE_DIR="$SCRIPT_DIR/modules"
 
 # --- Verify directory structure ----------------------------------------------
-[ ! -d "$LIB_DIR" ]            && echo "[✗] Cannot find lib/ directory. Expected at: $LIB_DIR" && exit 1
-[ ! -f "$LIB_DIR/common.sh" ]  && echo "[✗] Cannot find lib/common.sh. Expected at: $LIB_DIR/common.sh" && exit 1
-[ ! -f "$LIB_DIR/globals.sh" ] && echo "[✗] Cannot find lib/globals.sh. Expected at: $LIB_DIR/globals.sh" && exit 1
-[ ! -f "$LIB_DIR/status.sh" ]  && echo "[✗] Cannot find lib/status.sh. Expected at: $LIB_DIR/status.sh" && exit 1
-[ ! -d "$MODULE_DIR" ]         && echo "[✗] Cannot find modules/ directory. Expected at: $MODULE_DIR" && exit 1
+[ ! -d "$LIB_DIR" ]              && echo "[x] Cannot find lib/ directory. Expected at: $LIB_DIR" && exit 1
+[ ! -f "$LIB_DIR/common.sh" ]    && echo "[x] Cannot find lib/common.sh. Expected at: $LIB_DIR/common.sh" && exit 1
+[ ! -f "$LIB_DIR/globals.sh" ]   && echo "[x] Cannot find lib/globals.sh. Expected at: $LIB_DIR/globals.sh" && exit 1
+[ ! -f "$LIB_DIR/status.sh" ]    && echo "[x] Cannot find lib/status.sh. Expected at: $LIB_DIR/status.sh" && exit 1
+[ ! -d "$MODULE_DIR" ]           && echo "[x] Cannot find modules/ directory. Expected at: $MODULE_DIR" && exit 1
+[ ! -d "$MODULE_DIR/groups" ]    && echo "[x] Cannot find modules/groups/ directory. Expected at: $MODULE_DIR/groups" && exit 1
+[ ! -d "$MODULE_DIR/services" ]  && echo "[x] Cannot find modules/services/ directory. Expected at: $MODULE_DIR/services" && exit 1
 
 # --- Load common libs --------------------------------------------------------
 source "$LIB_DIR/common.sh"
@@ -82,6 +84,15 @@ export CURRENT_IP
 # --- Status -------------------------------------------------------------------
 show_status
 
+# --- Source all modules ------------------------------------------------------
+for _file in "$MODULE_DIR"/groups/*.sh; do
+    [ -f "$_file" ] && source "$_file"
+done
+
+for _file in "$MODULE_DIR"/services/*.sh; do
+    [ -f "$_file" ] && source "$_file"
+done
+unset _file
 
 # --- Check if FirstBoot has successfully run once already --------------------
 if [ -f /etc/firstboot.complete ]; then

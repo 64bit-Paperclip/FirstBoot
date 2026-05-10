@@ -39,8 +39,8 @@ show_status() {
     echo ""
 
     # Build display arrays from SERVICES and SVC_* variables
-    local -a DISP_LABELS
-    local -a DISP_STATUSES
+    local -a DISP_LABELS=()
+    local -a DISP_STATUSES=()
 
     for entry in "${SERVICES[@]}"; do
         IFS='|' read -r label svc pkg svcvar groups install_fn uninstall_fn configure_fn check_fn <<< "$entry"

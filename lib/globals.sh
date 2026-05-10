@@ -39,10 +39,86 @@ SYS_DISK_FREE=""
 SYS_LOAD=""
 SYS_CPU_CORES=""
 
+# --- Groups ------------------------------------------------------------------
+# Populated by each group module when sourced at startup
+# Format: "Label|name|entry_fn"
+SERVICE_GROUPS=()
+
+register_group() {
+    local entry="$1"
+    IFS='|' read -r label name entry_fn <<< "$entry"
+
+    # Validate all fields are present
+    if [ -z "$label" ] || [ -z "$name" ] || [ -z "$entry_fn" ]; then
+        warn "register_group: missing required fields in '$entry'"
+        warn "  Expected: Label|name|entry_fn"
+        return 1
+    fi
+
+    # Check entry function exists
+    if ! declare -f "$entry_fn" > /dev/null 2>&1; then
+        warn "register_group: entry function '$entry_fn' not found for group '$name'"
+        return 1
+    fi
+
+    # Check for duplicate
+    for g in "${SERVICE_GROUPS[@]}"; do
+        IFS='|' read -r glabel gname _ <<< "$g"
+        if [ "$gname" = "$name" ]; then
+            warn "register_group: group '$name' is already registered — skipping duplicate"
+            return 1
+        fi
+    done
+
+    SERVICE_GROUPS+=("$entry")
+}
+
 # --- Services ----------------------------------------------------------------
-# Populated by each module when sourced at startup
-# Format: "Label|service|package|SVC_var|groups|install_fn|uninstall_fn|configure_fn|check_fn"
+# Populated by each service module when sourced at startup
+# Format: "Label|service|package|SVC_var|groups|entry_fn"
 SERVICES=()
+
+register_service() {
+    local entry="$1"
+    IFS='|' read -r label svc pkg svcvar groups entry_fn <<< "$entry"
+
+    # Validate all required fields
+    if [ -z "$label" ] || [ -z "$svc" ] || [ -z "$pkg" ] || [ -z "$svcvar" ] || [ -z "$groups" ] || [ -z "$entry_fn" ]; then
+        warn "register_service: missing required fields in '$entry'"
+        warn "  Expected: Label|service|package|SVC_var|groups|entry_fn"
+        return 1
+    fi
+
+    # Check entry function exists
+    if ! declare -f "$entry_fn" > /dev/null 2>&1; then
+        warn "register_service: entry function '$entry_fn' not found for service '$label'"
+        return 1
+    fi
+
+    # Check for duplicate
+    for s in "${SERVICES[@]}"; do
+        IFS='|' read -r slabel ssvc _ <<< "$s"
+        if [ "$ssvc" = "$svc" ]; then
+            warn "register_service: service '$label' is already registered — skipping duplicate"
+            return 1
+        fi
+    done
+
+    # Check all groups exist
+    IFS=',' read -ra group_list <<< "$groups"
+    for group in "${group_list[@]}"; do
+        local found=false
+        for g in "${SERVICE_GROUPS[@]}"; do
+            IFS='|' read -r glabel gname _ <<< "$g"
+            [ "$gname" = "$group" ] && found=true && break
+        done
+        if [ "$found" = false ]; then
+            warn "register_service: service '$label' references unknown group '$group' — register group first"
+        fi
+    done
+
+    SERVICES+=("$entry")
+}
 
 # =============================================================================
 # HELPER FUNCTIONS
@@ -141,7 +217,8 @@ export CURRENT_IP ADMIN_USER SERVER_NAME SERVER_HOSTNAME
 export SYS_HOSTNAME SYS_OS SYS_OS_VERSION SYS_IPV4 SYS_IPV6
 export SYS_UPTIME SYS_RAM_TOTAL SYS_RAM_FREE SYS_DISK_TOTAL SYS_DISK_FREE
 export SYS_LOAD SYS_CPU_CORES
-export SERVICES
+export SERVICE_GROUPS SERVICES
 
+export -f register_group register_service
 export -f pkg_installed svc_running pkg_version is_installed is_running
 export -f detect_system detect_session detect_services detect_all
