@@ -65,6 +65,14 @@ echo "  ╚═══════════════════════
 echo -e "${NC}"
 
 
+# --- Check if FirstBoot has successfully run once already --------------------
+if [ -f /etc/firstboot.complete ]; then
+    warn "This script has been run before on this server."
+    warn "Running again may overwrite existing configuration."
+    read -rp "  Continue anyway? (yes/no): " RERUN
+    [ "$RERUN" != "yes" ] && error "Aborted."
+fi
+
 # --- Detect SSH session IP ---------------------------------------------------
 CURRENT_IP=$(who am i | awk '{print $5}' | tr -d '()')
 
@@ -276,3 +284,8 @@ fi
 
 read -rp "  Short name for this server (e.g. mail, db, web): " SERVER_NAME
 export SERVER_NAME SERVER_HOSTNAME
+
+
+# --- Create File so we know FirstBoot ran once successfully ------------------
+touch /etc/firstboot.complete
+echo "$(date)" >> /etc/firstboot.complete
