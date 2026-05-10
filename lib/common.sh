@@ -44,7 +44,7 @@ section() {
     local suffix_len=$(( total - ${#prefix} - title_len - 2 ))
     local suffix=$(printf '%0.s-' $(seq 1 $suffix_len))
     echo ""
-    echo -e "${BLUE}${prefix}${WHITE}${BOLD}${title}${NC}${BLUE} ${suffix}${NC}"
+    echo -e "${CYAN}${prefix}${WHITE}${BOLD}${title}${NC}${CYAN} ${suffix}${NC}"
     echo ""
 }
 
