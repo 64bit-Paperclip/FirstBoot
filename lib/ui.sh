@@ -12,23 +12,23 @@ section() {
     local title="$1"
     local title_len=${#title}
     local total=80
-    local prefix="---- "
-    local suffix_len=$(( total - ${#prefix} - title_len - 2 ))
+    local prefix="═══[ "
+    local suffix_len=$(( total - ${#prefix} - title_len - 3 ))
     local suffix=$(printf '%0.s-' $(seq 1 $suffix_len))
     echo ""
-    echo -e "${CYAN}${prefix}${NC}${BOLD}${title}${CYAN} ${suffix}${NC}"
+    echo -e "${CYAN}${prefix}${NC}${BOLD}${title}${CYAN} ]${suffix}${NC}"
     echo ""
 }
 
 draw_banner() {
 	echo ""
 	echo -e "${CYAN}${BOLD}"
-	echo "  ╔════════════════════════════════════════════════════════════════════════════╗"
-	echo "  ║                               FIRSTBOOT v1.0                               ║"
-	echo "  ╠════════════════════════════════════════════════════════════════════════════╣"
-	echo "  ║                            Server Setup Toolkit                            ║"
-	echo "  ║                              Ubuntu 24.04 LTS                              ║"
-	echo "  ╚════════════════════════════════════════════════════════════════════════════╝"
+	echo "╔══════════════════════════════════════════════════════════════════════════════╗"
+	echo "║                                FIRSTBOOT v1.0                                ║"
+	echo "╠══════════════════════════════════════════════════════════════════════════════╣"
+	echo "║                             Server Setup Toolkit                             ║"
+	echo "║                               Ubuntu 24.04 LTS                               ║"
+	echo "╚══════════════════════════════════════════════════════════════════════════════╝"
 	echo -e "${NC}"
 }
 
@@ -54,6 +54,18 @@ confirm_prompt() {
             *)     warn "Please enter yes/no or y/n." ;;
         esac
     done
+}
+
+required_prompt() {
+    local prompt="$1"
+    local varname="$2"
+    local value
+    while true; do
+        read -rp "  $prompt: " value
+        [ -n "$value" ] && break
+        warn "This field cannot be empty."
+    done
+    printf -v "$varname" '%s' "$value"
 }
 
 
