@@ -98,12 +98,13 @@ echo ""
 echo -e "  ${BOLD}Services:${NC}"
 echo ""
 
-# 3 columns, each column is 26 chars wide (fits in 80 chars with 2 char margin)
-COL_WIDTH=26
-COLS=3
+# 2 columns
+# Layout: 2 margin + 14 label + 1 space + 13 status = 30 per column
+# 2 x 30 = 60 chars total — well within 80 char width
+COLS=2
 COUNT=${#SVC_LABELS[@]}
 ROWS=$(( (COUNT + COLS - 1) / COLS ))
-
+ 
 for (( row=0; row<ROWS; row++ )); do
     printf "  "
     for (( col=0; col<COLS; col++ )); do
@@ -112,8 +113,9 @@ for (( row=0; row<ROWS; row++ )); do
             label="${SVC_LABELS[$idx]}:"
             status="${SVC_STATUSES[$idx]}"
             colored=$(colorize "$status")
-            # 11 = invisible color code chars (7 for color + 4 for NC)
-            printf "%-14s %-$((COL_WIDTH - 14 - 1 + 11))s" "$label" "$colored"
+            # Label fixed at 14 chars
+            # Status column fixed at 24 chars (13 raw + 11 invisible color codes)
+            printf "%-14s %-24s" "$label" "$colored"
         fi
     done
     echo ""
