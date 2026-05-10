@@ -44,6 +44,7 @@ ACTIONS_DIR="$MODULE_DIR/actions"
 [ ! -d "$LIB_DIR" ]              && echo "[x] Cannot find lib/ directory. Expected at: $LIB_DIR" && exit 1
 [ ! -f "$LIB_DIR/common.sh" ]    && echo "[x] Cannot find lib/common.sh. Expected at: $LIB_DIR/common.sh" && exit 1
 [ ! -f "$LIB_DIR/globals.sh" ]   && echo "[x] Cannot find lib/globals.sh. Expected at: $LIB_DIR/globals.sh" && exit 1
+[ ! -f "$LIB_DIR/ui.sh" ]        && echo "[x] Cannot find lib/ui.sh. Expected at: $LIB_DIR/ui.sh" && exit 1
 [ ! -f "$LIB_DIR/groups.sh" ]    && echo "[x] Cannot find lib/groups.sh. Expected at: $LIB_DIR/groups.sh" && exit 1
 [ ! -f "$LIB_DIR/services.sh" ]  && echo "[x] Cannot find lib/services.sh. Expected at: $LIB_DIR/services.sh" && exit 1
 [ ! -f "$LIB_DIR/actions.sh" ]   && echo "[x] Cannot find lib/actions.sh. Expected at: $LIB_DIR/actions.sh" && exit 1
@@ -56,6 +57,7 @@ ACTIONS_DIR="$MODULE_DIR/actions"
 # --- Load common libs --------------------------------------------------------
 source "$LIB_DIR/common.sh"
 source "$LIB_DIR/globals.sh"
+source "$LIB_DIR/ui.sh"
 source "$LIB_DIR/groups.sh"
 source "$LIB_DIR/services.sh"
 source "$LIB_DIR/actions.sh"
@@ -74,23 +76,24 @@ source_services
 source_actions
 
 # --- Banner ------------------------------------------------------------------
-echo ""
-echo -e "${CYAN}${BOLD}"
-echo "  ╔════════════════════════════════════════════════════════════════════════════╗"
-echo "  ║                               FIRSTBOOT v1.0                               ║"
-echo "  ╠════════════════════════════════════════════════════════════════════════════╣"
-echo "  ║                            Server Setup Toolkit                            ║"
-echo "  ║                              Ubuntu 24.04 LTS                              ║"
-echo "  ╚════════════════════════════════════════════════════════════════════════════╝"
-echo -e "${NC}"
-
-
-
+draw_banner
 
 # --- Status -------------------------------------------------------------------
 show_status
 
-
+while true; do
+    draw_main_menu
+    read -rp "  Selection: " MAIN_MENU_CHOICE
+    case "$MAIN_MENU_CHOICE" in
+        1) show_status ;;
+        2) show_groups_menu ;;
+        3) show_services_menu ;;
+        4) show_actions_menu ;;
+        0) break ;;
+        *) warn "Invalid selection" ;;
+    esac
+done
+unset MAIN_MENU_CHOICE
 
 # --- Server short name -------------------------------------------------------
 section "Server Identity"
