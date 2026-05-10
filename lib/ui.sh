@@ -30,3 +30,51 @@ draw_main_menu() {
     echo ""
     echo "  ────────────────────────────────────────────────────"
 }
+
+draw_groups_menu() {
+    echo ""
+    echo "  ── Setup a Group ────────────────────────────────────"
+    echo ""
+    local i=1
+    for entry in "${SERVICE_GROUPS[@]}"; do
+        IFS='|' read -r label name entry_fn <<< "$entry"
+        printf "    %d)  %s\n" "$i" "$label"
+        (( i++ ))
+    done
+    echo ""
+    echo "    0)  Back"
+    echo ""
+    echo "  ────────────────────────────────────────────────────"
+}
+
+draw_services_menu() {
+    echo ""
+    echo "  ── Manage a Service ─────────────────────────────────"
+    echo ""
+    local i=1
+    for entry in "${SERVICES[@]}"; do
+        IFS='|' read -r label svc pkg svcvar groups entry_fn <<< "$entry"
+        printf "    %d)  %-20s %s\n" "$i" "$label" "$(colorize_status "${!svcvar:-not installed}")"
+        (( i++ ))
+    done
+    echo ""
+    echo "    0)  Back"
+    echo ""
+    echo "  ────────────────────────────────────────────────────"
+}
+
+draw_actions_menu() {
+    echo ""
+    echo "  ── Run an Action ────────────────────────────────────"
+    echo ""
+    local i=1
+    for entry in "${ACTIONS[@]}"; do
+        IFS='|' read -r label name entry_fn <<< "$entry"
+        printf "    %d)  %s\n" "$i" "$label"
+        (( i++ ))
+    done
+    echo ""
+    echo "    0)  Back"
+    echo ""
+    echo "  ────────────────────────────────────────────────────"
+}
