@@ -64,6 +64,8 @@ echo "  ║              Ubuntu 24.04 LTS — Linode           ║"
 echo "  ╚══════════════════════════════════════════════════╝"
 echo -e "${NC}"
 
+# --- Status -------------------------------------------------------------------
+source "$LIB_DIR/status.sh"
 
 # --- Check if FirstBoot has successfully run once already --------------------
 if [ -f /etc/firstboot.complete ]; then
@@ -301,6 +303,36 @@ if [ "$ROLE_MAIL" = true ]; then
 
     export MAILBOX_TYPE ROLE_DB
 fi
+
+
+# --- Confirm before running --------------------------------------------------
+section "Ready to Install"
+
+echo ""
+echo -e "  ${BOLD}Server:${NC}        $SERVER_NAME"
+echo -e "  ${BOLD}Admin user:${NC}    $ADMIN_USER"
+echo -e "  ${BOLD}SSH IP:${NC}        $CURRENT_IP"
+echo ""
+echo -e "  ${BOLD}Components to install:${NC}"
+echo ""
+[ "$ROLE_HARDENING" = true ] && echo "    ✓  Hardening  (SSH, sysctl, fail2ban, unattended upgrades, UFW)"
+if [ "$ROLE_MAIL" = true ]; then
+    echo "    ✓  Mail       (Postfix, Dovecot, OpenDKIM, Rspamd, Redis, Certbot)"
+    [ "$MAILBOX_TYPE" = "virtual" ] && echo "                  Mailboxes: Virtual (MySQL)" \
+                                    || echo "                  Mailboxes: System users"
+fi
+[ "$ROLE_DB" = true ]  && echo "    ✓  Database  (MySQL 8.0)"
+[ "$ROLE_WEB" = true ] && echo "    ✓  Web       (Nginx, Certbot)"
+echo ""
+
+while true; do
+    read -rp "  Proceed? (yes/no): " CONFIRM
+    case "$CONFIRM" in
+        yes) break ;;
+        no)  error "Aborted by user." ;;
+        *)   warn "Please enter yes or no." ;;
+    esac
+done
 
 
 # --- Server identity ---------------------------------------------------------
