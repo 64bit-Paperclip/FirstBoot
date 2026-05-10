@@ -39,7 +39,8 @@ colorize() {
 # --- Gather system info ------------------------------------------------------
 SYS_HOSTNAME=$(hostname)
 SYS_OS=$(lsb_release -ds 2>/dev/null || echo "Unknown")
-SYS_IP=$(curl -s ifconfig.me)
+SYS_IPV4=$(curl -4 -s ifconfig.me)
+SYS_IPV6=$(curl -6 -s ifconfig.me)
 SYS_UPTIME=$(uptime -p 2>/dev/null | sed 's/up //' || echo "Unknown")
 SYS_RAM=$(free -h | awk '/^Mem:/{print $2}')
 SYS_DISK=$(df -h / | awk 'NR==2{print $4}')
@@ -87,7 +88,8 @@ section "System Status"
 
 echo -e "  ${BOLD}Hostname:${NC}  $SYS_HOSTNAME"
 echo -e "  ${BOLD}OS:${NC}        $SYS_OS"
-echo -e "  ${BOLD}IP:${NC}        $SYS_IP"
+echo -e "  ${BOLD}IPv4:${NC}      $SYS_IPV4"
+echo -e "  ${BOLD}IPv6:${NC}      $SYS_IPV6"
 echo -e "  ${BOLD}Uptime:${NC}    $SYS_UPTIME"
 echo -e "  ${BOLD}RAM:${NC}       $SYS_RAM total"
 echo -e "  ${BOLD}Disk:${NC}      $SYS_DISK free"
