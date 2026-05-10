@@ -7,6 +7,19 @@
 # GitHub:  https://github.com/64bit-Paperclip/FirstBoot
 # =============================================================================
 
+
+section() {
+    local title="$1"
+    local title_len=${#title}
+    local total=80
+    local prefix="---- "
+    local suffix_len=$(( total - ${#prefix} - title_len - 2 ))
+    local suffix=$(printf '%0.s-' $(seq 1 $suffix_len))
+    echo ""
+    echo -e "${CYAN}${prefix}${NC}${BOLD}${title}${CYAN} ${suffix}${NC}"
+    echo ""
+}
+
 draw_banner() {
 	echo ""
 	echo -e "${CYAN}${BOLD}"
@@ -28,53 +41,21 @@ draw_main_menu() {
     echo ""
     echo "    0)  Exit"
     echo ""
-    echo "  ────────────────────────────────────────────────────"
 }
 
-draw_groups_menu() {
-    echo ""
-    echo "  ── Setup a Group ────────────────────────────────────"
-    echo ""
-    local i=1
-    for entry in "${SERVICE_GROUPS[@]}"; do
-        IFS='|' read -r label name entry_fn <<< "$entry"
-        printf "    %d)  %s\n" "$i" "$label"
-        (( i++ ))
+confirm_prompt() {
+    local prompt="${1:-Are you sure?}"
+    local answer
+    while true; do
+        read -rp "  $prompt (yes/no): " answer
+        case "$answer" in
+            yes|y) return 0 ;;
+            no|n)  return 1 ;;
+            *)     warn "Please enter yes/no or y/n." ;;
+        esac
     done
-    echo ""
-    echo "    0)  Back"
-    echo ""
-    echo "  ────────────────────────────────────────────────────"
 }
 
-draw_services_menu() {
-    echo ""
-    echo "  ── Manage a Service ─────────────────────────────────"
-    echo ""
-    local i=1
-    for entry in "${SERVICES[@]}"; do
-        IFS='|' read -r label svc pkg svcvar groups entry_fn <<< "$entry"
-        printf "    %d)  %-20s %s\n" "$i" "$label" "$(colorize_status "${!svcvar:-not installed}")"
-        (( i++ ))
-    done
-    echo ""
-    echo "    0)  Back"
-    echo ""
-    echo "  ────────────────────────────────────────────────────"
-}
 
-draw_actions_menu() {
-    echo ""
-    echo "  ── Run an Action ────────────────────────────────────"
-    echo ""
-    local i=1
-    for entry in "${ACTIONS[@]}"; do
-        IFS='|' read -r label name entry_fn <<< "$entry"
-        printf "    %d)  %s\n" "$i" "$label"
-        (( i++ ))
-    done
-    echo ""
-    echo "    0)  Back"
-    echo ""
-    echo "  ────────────────────────────────────────────────────"
-}
+export -f section
+

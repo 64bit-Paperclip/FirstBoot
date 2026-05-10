@@ -9,8 +9,8 @@
 # --- Entry function ----------------------------------------------------------
 setup_database() {
     # TODO: not yet implemented
-    warn "Hardening group setup not yet implemented"
+    warn "Database group setup not yet implemented"
 }
 
 # --- Register ----------------------------------------------------------------
-register_database "Database|database|setup_database"
+register_group "Database|database|setup_database"

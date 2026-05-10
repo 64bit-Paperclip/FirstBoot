@@ -45,3 +45,18 @@ register_action() {
     ACTIONS+=("$entry")
     info "Action [$label] registered"
 }
+
+draw_actions_menu() {
+    
+    section "Run an Action"
+    
+    local i=1
+    for entry in "${ACTIONS[@]}"; do
+        IFS='|' read -r label name entry_fn <<< "$entry"
+        printf "    %d)  %s\n" "$i" "$label"
+        (( i++ ))
+    done
+    echo ""
+    echo "    0)  Back"
+    echo ""
+}

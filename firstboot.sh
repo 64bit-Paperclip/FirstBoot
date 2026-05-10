@@ -42,8 +42,8 @@ ACTIONS_DIR="$MODULE_DIR/actions"
 
 # --- Verify directory structure ----------------------------------------------
 [ ! -d "$LIB_DIR" ]              && echo "[x] Cannot find lib/ directory. Expected at: $LIB_DIR" && exit 1
-[ ! -f "$LIB_DIR/common.sh" ]    && echo "[x] Cannot find lib/common.sh. Expected at: $LIB_DIR/common.sh" && exit 1
 [ ! -f "$LIB_DIR/globals.sh" ]   && echo "[x] Cannot find lib/globals.sh. Expected at: $LIB_DIR/globals.sh" && exit 1
+[ ! -f "$LIB_DIR/common.sh" ]    && echo "[x] Cannot find lib/common.sh. Expected at: $LIB_DIR/common.sh" && exit 1
 [ ! -f "$LIB_DIR/ui.sh" ]        && echo "[x] Cannot find lib/ui.sh. Expected at: $LIB_DIR/ui.sh" && exit 1
 [ ! -f "$LIB_DIR/groups.sh" ]    && echo "[x] Cannot find lib/groups.sh. Expected at: $LIB_DIR/groups.sh" && exit 1
 [ ! -f "$LIB_DIR/services.sh" ]  && echo "[x] Cannot find lib/services.sh. Expected at: $LIB_DIR/services.sh" && exit 1
@@ -55,8 +55,8 @@ ACTIONS_DIR="$MODULE_DIR/actions"
 [ ! -d "$ACTIONS_DIR" ]          && echo "[x] Cannot find modules/actions/ directory. Expected at: $ACTIONS_DIR" && exit 1
 
 # --- Load common libs --------------------------------------------------------
-source "$LIB_DIR/common.sh"
 source "$LIB_DIR/globals.sh"
+source "$LIB_DIR/common.sh"
 source "$LIB_DIR/ui.sh"
 source "$LIB_DIR/groups.sh"
 source "$LIB_DIR/services.sh"

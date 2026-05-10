@@ -118,5 +118,20 @@ detect_services() {
     done
 }
 
+draw_services_menu() {
+    
+    section "Manage a Service"
+    
+    local i=1
+    for entry in "${SERVICES[@]}"; do
+        IFS='|' read -r label svc pkg svcvar groups entry_fn <<< "$entry"
+        printf "    %d)  %-20s %s\n" "$i" "$label" "$(colorize_status "${!svcvar:-not installed}")"
+        (( i++ ))
+    done
+    echo ""
+    echo "    0)  Back"
+    echo ""
+}
+
 export -f pkg_installed svc_running pkg_version is_installed is_running
 export -f source_services register_service detect_services

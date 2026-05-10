@@ -52,4 +52,20 @@ register_group() {
 	info "Service Group [$label] registered"
 }
 
+draw_groups_menu() {
+    
+    section "Setup a Group"
+    
+    local i=1
+    for entry in "${SERVICE_GROUPS[@]}"; do
+        IFS='|' read -r label name entry_fn <<< "$entry"
+        printf "    %d)  %s\n" "$i" "$label"
+        (( i++ ))
+    done
+    echo ""
+    echo "    0)  Back"
+    echo ""
+}
+
+
 export -f source_groups register_service
