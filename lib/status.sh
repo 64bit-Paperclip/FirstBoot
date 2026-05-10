@@ -112,11 +112,8 @@ for (( row=0; row<ROWS; row++ )); do
             label="${SVC_LABELS[$idx]}:"
             status="${SVC_STATUSES[$idx]}"
             colored=$(colorize "$status")
-            # Printf with fixed width for label, color applied after
-            printf "%-14s %s" "$label" "$colored"
-            # Pad to column width (accounting for invisible color codes)
-            pad=$(( COL_WIDTH - ${#label} - ${#status} - 1 ))
-            printf "%${pad}s" ""
+            # 11 = invisible color code chars (7 for color + 4 for NC)
+            printf "%-14s %-$((COL_WIDTH - 14 - 1 + 11))s" "$label" "$colored"
         fi
     done
     echo ""
