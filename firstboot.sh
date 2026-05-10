@@ -36,19 +36,29 @@ set -uo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 LIB_DIR="$SCRIPT_DIR/lib"
 MODULE_DIR="$SCRIPT_DIR/modules"
+SERVICE_GROUPS_DIR="$MODULE_DIR/groups"
+SERVICES_DIR="$MODULE_DIR/services"
+ACTIONS_DIR="$MODULE_DIR/actions"
 
 # --- Verify directory structure ----------------------------------------------
 [ ! -d "$LIB_DIR" ]              && echo "[x] Cannot find lib/ directory. Expected at: $LIB_DIR" && exit 1
 [ ! -f "$LIB_DIR/common.sh" ]    && echo "[x] Cannot find lib/common.sh. Expected at: $LIB_DIR/common.sh" && exit 1
 [ ! -f "$LIB_DIR/globals.sh" ]   && echo "[x] Cannot find lib/globals.sh. Expected at: $LIB_DIR/globals.sh" && exit 1
+[ ! -f "$LIB_DIR/groups.sh" ]    && echo "[x] Cannot find lib/groups.sh. Expected at: $LIB_DIR/groups.sh" && exit 1
+[ ! -f "$LIB_DIR/services.sh" ]  && echo "[x] Cannot find lib/services.sh. Expected at: $LIB_DIR/services.sh" && exit 1
+[ ! -f "$LIB_DIR/actions.sh" ]   && echo "[x] Cannot find lib/actions.sh. Expected at: $LIB_DIR/actions.sh" && exit 1
 [ ! -f "$LIB_DIR/status.sh" ]    && echo "[x] Cannot find lib/status.sh. Expected at: $LIB_DIR/status.sh" && exit 1
 [ ! -d "$MODULE_DIR" ]           && echo "[x] Cannot find modules/ directory. Expected at: $MODULE_DIR" && exit 1
-[ ! -d "$MODULE_DIR/groups" ]    && echo "[x] Cannot find modules/groups/ directory. Expected at: $MODULE_DIR/groups" && exit 1
-[ ! -d "$MODULE_DIR/services" ]  && echo "[x] Cannot find modules/services/ directory. Expected at: $MODULE_DIR/services" && exit 1
+[ ! -d "$SERVICE_GROUPS_DIR" ]   && echo "[x] Cannot find modules/groups/ directory. Expected at: $SERVICE_GROUPS_DIR" && exit 1
+[ ! -d "$SERVICES_DIR" ]         && echo "[x] Cannot find modules/services/ directory. Expected at: $SERVICES_DIR" && exit 1
+[ ! -d "$ACTIONS_DIR" ]          && echo "[x] Cannot find modules/actions/ directory. Expected at: $ACTIONS_DIR" && exit 1
 
 # --- Load common libs --------------------------------------------------------
 source "$LIB_DIR/common.sh"
 source "$LIB_DIR/globals.sh"
+source "$LIB_DIR/groups.sh"
+source "$LIB_DIR/services.sh"
+source "$LIB_DIR/actions.sh"
 source "$LIB_DIR/status.sh"
 
 
@@ -70,37 +80,15 @@ exec > >(tee -a "$LOG_FILE") 2>&1
 
 info "Logging to: $LOG_FILE"
 
-# --- Detect SSH session IP ---------------------------------------------------
-CURRENT_IP=$(who am i | awk '{print $5}' | tr -d '()')
 
-if [ -z "$CURRENT_IP" ]; then
-    warn "Could not auto-detect your SSH session IP."
-    read -rp "  Enter your current IP to whitelist for SSH: " CURRENT_IP
-fi
-
-info "Your IP detected as: ${BOLD}$CURRENT_IP${NC}"
-export CURRENT_IP
+# --- Source all modules ------------------------------------------------------
+source_groups
+source_services
+source_actions
 
 # --- Status -------------------------------------------------------------------
 show_status
 
-# --- Source all modules ------------------------------------------------------
-for _file in "$MODULE_DIR"/groups/*.sh; do
-    [ -f "$_file" ] && source "$_file"
-done
-
-for _file in "$MODULE_DIR"/services/*.sh; do
-    [ -f "$_file" ] && source "$_file"
-done
-unset _file
-
-# --- Check if FirstBoot has successfully run once already --------------------
-if [ -f /etc/firstboot.complete ]; then
-    warn "This script has been run before on this server."
-    warn "Running again may overwrite existing configuration."
-    read -rp "  Continue anyway? (yes/no): " RERUN
-    [ "$RERUN" != "yes" ] && error "Aborted."
-fi
 
 
 # --- Server short name -------------------------------------------------------
@@ -188,8 +176,3 @@ fi
 
 read -rp "  Short name for this server (e.g. mail, db, web): " SERVER_NAME
 export SERVER_NAME SERVER_HOSTNAME
-
-
-# --- Create File so we know FirstBoot ran once successfully ------------------
-touch /etc/firstboot.complete
-echo "$(date)" >> /etc/firstboot.complete

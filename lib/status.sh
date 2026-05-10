@@ -21,7 +21,9 @@ colorize_status() {
 # --- show_status -------------------------------------------------------------
 # Refreshes all detection data then displays system info and service statuses
 show_status() {
-    detect_all
+    detect_system
+    detect_session
+	detect_services
 
     section "System Status"
 
@@ -34,6 +36,8 @@ show_status() {
     echo -e "  ${BOLD}Disk:${NC}      $SYS_DISK_TOTAL total, $SYS_DISK_FREE free"
     echo -e "  ${BOLD}Load:${NC}      $SYS_LOAD"
     echo -e "  ${BOLD}CPUs:${NC}      $SYS_CPU_CORES"
+	echo ""
+	echo -e "  ${BOLD}USER IP:${NC}   $CURRENT_IP"
     echo ""
     echo -e "  ${BOLD}Services:${NC}"
     echo ""
@@ -43,7 +47,7 @@ show_status() {
     local -a DISP_STATUSES=()
 
     for entry in "${SERVICES[@]}"; do
-        IFS='|' read -r label svc pkg svcvar groups install_fn uninstall_fn configure_fn check_fn <<< "$entry"
+        IFS='|' read -r label svc pkg svcvar groups entry_fn <<< "$entry"
         status="${!svcvar:-not installed}"
         DISP_LABELS+=("$label")
         DISP_STATUSES+=("$status")

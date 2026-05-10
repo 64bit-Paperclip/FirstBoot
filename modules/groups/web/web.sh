@@ -6,4 +6,12 @@
 # TODO: not yet implemented
 # =============================================================================
  
-warn "Module 'web' is a stub — not yet implemented"
+
+# --- Entry function ----------------------------------------------------------
+setup_web() {
+    # TODO: not yet implemented
+    warn "Web group setup not yet implemented"
+}
+
+# --- Register ----------------------------------------------------------------
+register_group "Web|web|setup_web"
