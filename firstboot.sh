@@ -66,13 +66,13 @@ echo -e "${NC}"
 
 
 # --- Detect SSH session IP ---------------------------------------------------
-echo "Detecting current IP..."
+CURRENT_IP=$(who am i | awk '{print $5}' | tr -d '()')
 
-CURRENT_IP=$(echo "${SSH_CONNECTION:-}" | awk '{print $1}')
 if [ -z "$CURRENT_IP" ]; then
     warn "Could not auto-detect your SSH session IP."
     read -rp "  Enter your current IP to whitelist for SSH: " CURRENT_IP
 fi
+
 info "Your IP detected as: ${BOLD}$CURRENT_IP${NC}"
 export CURRENT_IP
 
