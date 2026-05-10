@@ -80,15 +80,30 @@ export CURRENT_IP
 section "Server Identity"
 
 CURRENT_HOSTNAME=$(hostname)
-info "Current hostname: ${BOLD}$CURRENT_HOSTNAME${NC}"
-read -rp "  Change hostname? (yes/no): " CHANGE_HOSTNAME
 
-if [ "$CHANGE_HOSTNAME" = "yes" ]; then
-    read -rp "  New hostname (e.g. mail.example.com): " SERVER_HOSTNAME
+echo "  Current hostname: $CURRENT_HOSTNAME"
+echo ""
+echo "  Current /etc/hosts:"
+cat /etc/hosts | sed 's/^/    /'
+echo ""
+
+if [ "$CURRENT_HOSTNAME" = "localhost" ]; then
+    warn "Hostname is 'localhost' and must be changed before continuing."
+    read -rp "  Full hostname (e.g. mail.example.com): " SERVER_HOSTNAME
     hostnamectl set-hostname "$SERVER_HOSTNAME"
-    info "Hostname set to: $SERVER_HOSTNAME"
+    echo "127.0.1.1 $SERVER_HOSTNAME ${SERVER_HOSTNAME%%.*}" >> /etc/hosts
+    info "Hostname updated to: $SERVER_HOSTNAME"
 else
-    SERVER_HOSTNAME="$CURRENT_HOSTNAME"
+    read -rp "  Update hostname? (yes/no): " UPDATE_HOSTNAME
+    if [ "$UPDATE_HOSTNAME" = "yes" ]; then
+        read -rp "  Full hostname (e.g. mail.example.com): " SERVER_HOSTNAME
+        hostnamectl set-hostname "$SERVER_HOSTNAME"
+        echo "127.0.1.1 $SERVER_HOSTNAME ${SERVER_HOSTNAME%%.*}" >> /etc/hosts
+        info "Hostname updated to: $SERVER_HOSTNAME"
+    else
+        SERVER_HOSTNAME="$CURRENT_HOSTNAME"
+        info "Keeping existing hostname: $SERVER_HOSTNAME"
+    fi
 fi
 
 read -rp "  Short name for this server (e.g. mail, db, web): " SERVER_NAME
