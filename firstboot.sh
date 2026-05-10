@@ -172,7 +172,7 @@ show_menu() {
     [ "$ROLE_WEB" = true ]       && echo -e "    ${GREEN}[✓]${NC} 4)  Web" \
                                  || echo    "    [ ] 4)  Web"
     echo ""
-    echo    "         0)  Done"
+    echo "        0)  Done"
     echo ""
     echo "  ── Enter a number to toggle, 0 when done ────────────"
 }
@@ -251,6 +251,57 @@ while true; do
 done
 
 export ROLE_HARDENING ROLE_MAIL ROLE_DB ROLE_WEB
+
+
+# --- Mailbox type ------------------------------------------------------------
+# Asked here because the answer affects which modules are installed
+if [ "$ROLE_MAIL" = true ]; then
+	section "Mailbox Type"
+    echo "  How do you want to manage mailboxes?"
+    echo ""
+    echo "    1)  Virtual mailboxes via MySQL  (recommended)"
+    echo "        Users stored in database, scales easily,"
+    echo "        supports multiple domains."
+    echo ""
+    echo "    2)  System users"
+    echo "        Each mailbox is a real Linux user,"
+    echo "        simpler but limited."
+    echo ""
+
+    while true; do
+        read -rp "  Selection: " MAILBOX_TYPE
+        case "$MAILBOX_TYPE" in
+            1)
+                MAILBOX_TYPE="virtual"
+                if [ "$ROLE_DB" = false ]; then
+                    echo ""
+                    warn "Virtual mailboxes require MySQL."
+                    warn "Database install will be added to this setup."
+                    read -rp "  Continue? (yes/no): " CONFIRM_DB
+                    if [ "$CONFIRM_DB" = "yes" ]; then
+                        ROLE_DB=true
+                        info "Database added to install."
+                    else
+                        warn "Cannot use virtual mailboxes without a database."
+                        warn "Reverting to system users."
+                        MAILBOX_TYPE="system"
+                    fi
+                fi
+                break
+                ;;
+            2)
+                MAILBOX_TYPE="system"
+                break
+                ;;
+            *)
+                warn "Invalid selection — enter 1 or 2"
+                ;;
+        esac
+    done
+
+    export MAILBOX_TYPE ROLE_DB
+fi
+
 
 # --- Server identity ---------------------------------------------------------
 section "Server Identity"
