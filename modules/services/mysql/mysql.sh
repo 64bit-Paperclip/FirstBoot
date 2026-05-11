@@ -18,13 +18,12 @@ unset _file MYSQL_DIR
 MYSQL_MENU_OPTIONS=(
 	"Install MySql|action_install_mysql"
 	"Uninstall MySql|action_uninstall_mysql"
-    "List Databases|action_mysql_list_databases"
+	"---|"
     "Create Database|action_mysql_create_database"
+	"List Databases|action_mysql_list_databases"
+    "---|"
     "List Users|action_mysql_list_users"
     "Create User|action_mysql_create_user"
-    "Drop User|action_mysql_drop_user"
-    "Configure|mysql_configure"
-    "Status|mysql_status"
 )
 
 mysql_entry() {
