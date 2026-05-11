@@ -31,10 +31,10 @@ draw_banner() {
 	echo ""
 	echo -e "${CYAN}${BOLD}"
 	echo "╔══════════════════════════════════════════════════════════════════════════════╗"
-	echo -e "║                                ${NC}FIRSTBOOT v1.0{CYAN}                                ║"
+	echo -e "║                                ${NC}FIRSTBOOT v1.0${CYAN}                                ║"
 	echo "╠══════════════════════════════════════════════════════════════════════════════╣"
-	echo -e "║                             ${NC}Server Setup Toolkit{CYAN}                             ║"
-	echo -e "║                               ${NC}Ubuntu 24.04 LTS{CYAN}                               ║"
+	echo -e "║                             ${NC}Server Setup Toolkit${CYAN}                             ║"
+	echo -e "║                               ${NC}Ubuntu 24.04 LTS${CYAN}                               ║"
 	echo "╚══════════════════════════════════════════════════════════════════════════════╝"
 	echo -e "${NC}"
 }
@@ -42,12 +42,12 @@ draw_banner() {
 draw_main_menu() {
     section "Main Menu"
     echo "    1)  System Status"
-    echo "    2)  Setup a Group"
-    echo "    3)  Manage a Service"
-    echo "    4)  Run an Action"
+	echo "    2)  Manage Runtimes"
+    echo "    3)  Manage By Service Group"
+    echo "    4)  Manage Services"
+    echo "    5)  Run an Action"
     echo ""
     echo "    0)  Exit"
-    echo ""
 	section_break
 }
 

@@ -54,7 +54,7 @@ register_group() {
 
 draw_groups_menu() {
     
-    section "Setup a Group"
+    section "Service Groups"
     
     local i=1
     for entry in "${SERVICE_GROUPS[@]}"; do

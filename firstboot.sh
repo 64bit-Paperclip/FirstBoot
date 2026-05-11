@@ -40,6 +40,14 @@ SERVICE_GROUPS_DIR="$MODULE_DIR/groups"
 SERVICES_DIR="$MODULE_DIR/services"
 ACTIONS_DIR="$MODULE_DIR/actions"
 
+MAIN_MENU_OPTIONS=(
+    "System Status|show_status"
+    "Manage Runtimes|show_status"
+    "Manage By Service Group|groups_menu"
+	"Manage Service|services_menu"
+	"Actions|draw_actions_menu"
+)
+
 # --- Verify directory structure ----------------------------------------------
 [ ! -d "$LIB_DIR" ]              && echo "[x] Cannot find lib/ directory. Expected at: $LIB_DIR" && exit 1
 [ ! -f "$LIB_DIR/globals.sh" ]   && echo "[x] Cannot find lib/globals.sh. Expected at: $LIB_DIR/globals.sh" && exit 1
@@ -63,8 +71,6 @@ source "$LIB_DIR/services.sh"
 source "$LIB_DIR/actions.sh"
 source "$LIB_DIR/status.sh"
 
-
-
 # --- Source all modules ------------------------------------------------------
 source_groups
 source_services
@@ -83,19 +89,8 @@ info "Logging to: $LOG_FILE"
 # --- Status -------------------------------------------------------------------
 show_status
 
-while true; do
-    draw_main_menu
-    read -rp "  Selection: " MAIN_MENU_CHOICE
-    case "$MAIN_MENU_CHOICE" in
-        1) show_status ;;
-        2) groups_menu ;;
-        3) services_menu ;;
-        4) draw_actions_menu ;;
-        0) break ;;
-        *) warn "Invalid selection" ;;
-    esac
-done
-unset MAIN_MENU_CHOICE
+command_menu MAIN_MENU_OPTIONS "Main Menu"
+
 
 	
 # --- Server short name -------------------------------------------------------
