@@ -67,5 +67,41 @@ draw_groups_menu() {
     echo ""
 }
 
+groups_menu() {
+    while true; do
+        draw_groups_menu
+        read -rp "  Selection: " GROUPS_CHOICE
+
+        if [ "$GROUPS_CHOICE" = "0" ]; then
+            break
+        fi
+
+        # Validate it's a number
+        if ! [[ "$GROUPS_CHOICE" =~ ^[0-9]+$ ]]; then
+            warn "Invalid selection."
+            continue
+        fi
+
+        # Get the selected group entry
+        local idx=$(( GROUPS_CHOICE - 1 ))
+        if [ "$idx" -lt 0 ] || [ "$idx" -ge "${#SERVICE_GROUPS[@]}" ]; then
+            warn "Invalid selection."
+            continue
+        fi
+
+        local entry="${SERVICE_GROUPS[$idx]}"
+        IFS='|' read -r label name entry_fn <<< "$entry"
+
+        # Call the entry function
+        if declare -f "$entry_fn" > /dev/null 2>&1; then
+            "$entry_fn"
+        else
+            warn "Entry function '$entry_fn' not found for group '$label'."
+        fi
+    done
+    unset GROUPS_CHOICE
+}
+
+
 
 export -f source_groups register_service

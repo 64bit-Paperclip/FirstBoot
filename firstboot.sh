@@ -86,7 +86,7 @@ while true; do
     read -rp "  Selection: " MAIN_MENU_CHOICE
     case "$MAIN_MENU_CHOICE" in
         1) show_status ;;
-        2) draw_groups_menu ;;
+        2) groups_menu ;;
         3) draw_services_menu ;;
         4) draw_actions_menu ;;
         0) break ;;

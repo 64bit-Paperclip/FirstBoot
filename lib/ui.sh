@@ -14,7 +14,7 @@ section() {
     local total=80
     local prefix="═══[ "
     local suffix_len=$(( total - ${#prefix} - title_len - 3 ))
-    local suffix=$(printf '%0.s-' $(seq 1 $suffix_len))
+    local suffix=$(printf '%0.s═' $(seq 1 $suffix_len))
     echo ""
     echo -e "${CYAN}${prefix}${NC}${BOLD}${title}${CYAN} ]${suffix}${NC}"
     echo ""

@@ -8,7 +8,7 @@
 
 # --- Source actions ----------------------------------------------------------
 NGINX_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-for _file in "$NGINX_DIR/actions"/*.sh; do
+for _file in $(ls "$NGINX_DIR/actions"/*.sh 2>/dev/null | sort); do
     [ -f "$_file" ] && source "$_file"
 done
 unset _file NGINX_DIR
