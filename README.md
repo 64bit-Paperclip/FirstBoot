@@ -33,8 +33,9 @@ sudo apt update && sudo apt install -y unzip
 ### 3. Extract
 
 ```bash
-unzip firstboot.zip -d firstboot
-cd firstboot
+unzip firstboot.zip
+mv FirstBoot-master FirstBoot
+cd FirstBoot
 ```
 
 ### 4. Run
