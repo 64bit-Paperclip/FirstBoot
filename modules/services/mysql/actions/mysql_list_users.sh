@@ -8,7 +8,7 @@
 
 # --- Action ------------------------------------------------------------------
 action_mysql_list_users() {
-    section "MySQL Users"
+    
 
     if ! pkg_installed "mysql-server"; then
         warn "MySQL is not installed."
@@ -19,6 +19,8 @@ action_mysql_list_users() {
         warn "MySQL is not running."
         return 1
     fi
+
+	section "MySQL Users"
 
     local users
     users=$(mysql -u root -e "SELECT User, Host, plugin FROM mysql.user ORDER BY User;" 2>/dev/null)

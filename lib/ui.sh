@@ -5,10 +5,21 @@
 # Do not run directly
 # Author:  Jason Penick
 # GitHub:  https://github.com/64bit-Paperclip/FirstBoot
+#
+# UI Suppression:
+#   Set NO_SECTION_UI=true before calling section() or section_break()
+#   to suppress output. Unset after to restore normal behavior.
+#   Example:
+#     NO_SECTION_UI=true
+#     section "My Title"   # suppressed
+#     unset NO_SECTION_UI
 # =============================================================================
 
 
 section() {
+
+	[ "${NO_SECTION_UI:-false}" = "true" ] && return 0
+
     local title="$1"
     local title_len=${#title}
     local total=80
@@ -21,6 +32,9 @@ section() {
 }
 
 section_break() {
+
+	[ "${NO_SECTION_UI:-false}" = "true" ] && return 0
+
 	echo ""
 	echo -e "${CYAN}═══════════════════════════════════════════════════════════════════════════════${NC}"
 	echo ""
