@@ -68,6 +68,49 @@ required_prompt() {
     printf -v "$varname" '%s' "$value"
 }
 
+command_menu() {
+    local -n _options="$1"  # nameref to the options array
+    local _title="$2"
+
+    while true; do
+        section "$_title"
+        local i=1
+        for entry in "${_options[@]}"; do
+            IFS='|' read -r label fn <<< "$entry"
+            printf "    %d)  %s\n" "$i" "$label"
+            (( i++ ))
+        done
+        echo ""
+        echo "    0)  Back"
+        echo ""
+
+        read -rp "  Selection: " CMD_CHOICE
+
+        if [ "$CMD_CHOICE" = "0" ]; then
+            break
+        fi
+
+        if ! [[ "$CMD_CHOICE" =~ ^[0-9]+$ ]]; then
+            warn "Invalid selection."
+            continue
+        fi
+
+        local idx=$(( CMD_CHOICE - 1 ))
+        if [ "$idx" -lt 0 ] || [ "$idx" -ge "${#_options[@]}" ]; then
+            warn "Invalid selection."
+            continue
+        fi
+
+        IFS='|' read -r label fn <<< "${_options[$idx]}"
+
+        if declare -f "$fn" > /dev/null 2>&1; then
+            "$fn"
+        else
+            warn "Function '$fn' not found."
+        fi
+    done
+    unset CMD_CHOICE
+}
 
 export -f section
 

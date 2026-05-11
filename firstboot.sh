@@ -87,7 +87,7 @@ while true; do
     case "$MAIN_MENU_CHOICE" in
         1) show_status ;;
         2) groups_menu ;;
-        3) draw_services_menu ;;
+        3) services_menu ;;
         4) draw_actions_menu ;;
         0) break ;;
         *) warn "Invalid selection" ;;
@@ -95,6 +95,7 @@ while true; do
 done
 unset MAIN_MENU_CHOICE
 
+	
 # --- Server short name -------------------------------------------------------
 section "Server Identity"
 

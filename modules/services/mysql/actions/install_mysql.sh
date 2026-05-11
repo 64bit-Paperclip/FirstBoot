@@ -1,4 +1,4 @@
-#!/bin/bash
+	#!/bin/bash
 # =============================================================================
 # modules/actions/mysql_install.sh
 # Do not run directly

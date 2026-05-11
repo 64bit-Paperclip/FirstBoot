@@ -119,9 +119,7 @@ detect_services() {
 }
 
 draw_services_menu() {
-    
     section "Manage a Service"
-    
     local i=1
     for entry in "${SERVICES[@]}"; do
         IFS='|' read -r label svc pkg svcvar groups entry_fn <<< "$entry"
@@ -131,6 +129,41 @@ draw_services_menu() {
     echo ""
     echo "    0)  Back"
     echo ""
+}
+
+services_menu() {
+    while true; do
+        draw_services_menu
+        read -rp "  Selection: " SERVICES_CHOICE
+
+        if [ "$SERVICES_CHOICE" = "0" ]; then
+            break
+        fi
+
+        # Validate it's a number
+        if ! [[ "$SERVICES_CHOICE" =~ ^[0-9]+$ ]]; then
+            warn "Invalid selection."
+            continue
+        fi
+
+        # Get the selected service entry
+        local idx=$(( SERVICES_CHOICE - 1 ))
+        if [ "$idx" -lt 0 ] || [ "$idx" -ge "${#SERVICES[@]}" ]; then
+            warn "Invalid selection."
+            continue
+        fi
+
+        local entry="${SERVICES[$idx]}"
+        IFS='|' read -r label svc pkg svcvar groups entry_fn <<< "$entry"
+
+        # Call the entry function
+        if declare -f "$entry_fn" > /dev/null 2>&1; then
+            "$entry_fn"
+        else
+            warn "Entry function '$entry_fn' not found for service '$label'."
+        fi
+    done
+    unset SERVICES_CHOICE
 }
 
 export -f pkg_installed svc_running pkg_version is_installed is_running

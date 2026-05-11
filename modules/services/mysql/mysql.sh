@@ -14,10 +14,21 @@ for _file in $(ls "$MYSQL_DIR/actions"/*.sh 2>/dev/null | sort); do
 done
 unset _file MYSQL_DIR
 
+
+MYSQL_MENU_OPTIONS=(
+    "List Databases|action_mysql_list_databases"
+    "Create Database|action_mysql_create_database"
+    "Drop Database|action_mysql_drop_database"
+    "List Users|action_mysql_list_users"
+    "Create User|action_mysql_create_user"
+    "Drop User|action_mysql_drop_user"
+    "Configure|mysql_configure"
+    "Status|mysql_status"
+)
+
 # --- Entry function ----------------------------------------------------------
 mysql_entry() {
-    # TODO: not yet implemented
-    warn "MySQL service not yet implemented"
+    command_menu MYSQL_MENU_OPTIONS "MySQL"
 }
 
 # --- Register ----------------------------------------------------------------
