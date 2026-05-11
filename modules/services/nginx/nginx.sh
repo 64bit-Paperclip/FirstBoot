@@ -7,12 +7,12 @@
 # =============================================================================
 
 # --- Service variables -------------------------------------------------------
-NGINX_LABEL="MySQL"
-NGINX_SERVICE="mysql"
-NGINX_PACKAGE="mysql-server"
-NGINX_SVC_VAR="SVC_MYSQL"
-NGINX_GROUP="database"
-NGINX_ENTRY="mysql_entry"
+NGINX_LABEL="Nginx"
+NGINX_SERVICE="nginx"
+NGINX_PACKAGE="nginx"
+NGINX_SVC_VAR="SVC_NGINX"
+NGINX_GROUP="web"
+NGINX_ENTRY="nginx_entry"
 
 # --- Initialize status variable ----------------------------------------------
 SVC_NGINX="not installed"
