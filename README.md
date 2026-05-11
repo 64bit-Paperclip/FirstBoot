@@ -8,11 +8,13 @@ FirstBoot is an interactive, modular server management script. It handles initia
 
 ## Requirements
 
-- Ubuntu 24.04 LTS
+- Debian-based Linux (Ubuntu, Debian, Linux Mint, Pop!_OS etc.)
+- systemd
+- bash 4.0+
 - Root or sudo access
 - Internet connection
 
----
+> Tested on Ubuntu 24.04 LTS. Other Debian-based distributions should work but are not officially supported.
 
 ## Installation
 
