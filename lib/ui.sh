@@ -20,6 +20,10 @@ section() {
     echo ""
 }
 
+section_break() {
+	echo "${CYAN}════════════════════════════════════════════════════════════════════════${NC}"
+}
+
 draw_banner() {
 	echo ""
 	echo -e "${CYAN}${BOLD}"

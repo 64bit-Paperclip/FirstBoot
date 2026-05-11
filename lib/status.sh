@@ -72,9 +72,7 @@ show_status() {
         echo ""
     done
 
-    echo ""
-    echo "  ── Press any key to continue ────────────────────────"
-    read -rn1
+	section_break
 }
 
 export -f show_status
