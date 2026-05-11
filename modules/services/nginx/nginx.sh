@@ -25,18 +25,10 @@ NGINX_UTILS_DIR="$NGINX_DIR/utilities"
 # --- Include Utilities -------------------------------------------------------
 source "$NGINX_UTILS_DIR/nginx_blocks.sh"
 
-# --- Register ----------------------------------------------------------------
-register_service "$NGINX_LABEL|$NGINX_SERVICE|$NGINX_PACKAGE|$NGINX_SVC_VAR|$NGINX_GROUP|$NGINX_ENTRY"
-
-# --- Source actions ----------------------------------------------------------
-source_service_actions "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-
-
 # --- Global Utility Functions ------------------------------------------------
 is_nginx_installed(){
     pkg_installed "$NGINX_PACKAGE"
 }
-
 
 is_nginx_running(){
     svc_running "$NGINX_SERVICE"
@@ -47,6 +39,12 @@ nginx_entry() {
     dynamic_command_menu _nginx_generate_menu_options "Nginx"
     _nginx_cleanup
 }
+
+# --- Register ----------------------------------------------------------------
+register_service "$NGINX_LABEL|$NGINX_SERVICE|$NGINX_PACKAGE|$NGINX_SVC_VAR|$NGINX_GROUP|$NGINX_ENTRY"
+
+# --- Source actions ----------------------------------------------------------
+source_service_actions "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 
 _nginx_generate_menu_options() {

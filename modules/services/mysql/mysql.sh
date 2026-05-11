@@ -23,12 +23,7 @@ MYSQL_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 MYSQL_ACTIONS_DIR="$MYSQL_DIR/actions"
 
 
-# --- Register ----------------------------------------------------------------
-register_service "$MYSQL_LABEL|$MYSQL_SERVICE|$MYSQL_PACKAGE|$MYSQL_SVC_VAR|$MYSQL_GROUP|$MYSQL_ENTRY"
 
-
-# --- Source actions ----------------------------------------------------------
-source_service_actions "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 
 # --- Global Utility Functions ------------------------------------------------
@@ -39,8 +34,6 @@ is_mysql_installed(){
 is_mysql_running(){
     svc_running "$MYSQL_SERVICE"
 }
-
-
 
 MYSQL_MENU_OPTIONS=(
 	"Install MySql|action_install_mysql"
@@ -58,3 +51,9 @@ mysql_entry() {
     
 }
 
+# --- Register ----------------------------------------------------------------
+register_service "$MYSQL_LABEL|$MYSQL_SERVICE|$MYSQL_PACKAGE|$MYSQL_SVC_VAR|$MYSQL_GROUP|$MYSQL_ENTRY"
+
+
+# --- Source actions ----------------------------------------------------------
+source_service_actions "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
