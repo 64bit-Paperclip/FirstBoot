@@ -40,7 +40,7 @@ cd firstboot
 ### 4. Run
 
 ```bash
-sudo bash firstboot.sh
+sudo bash ./firstboot.sh
 ```
 
 ---
@@ -77,16 +77,16 @@ modules/
 ## How It Works
 
 ### Groups
-Groups are curated stacks of services that work together. Selecting a group from the menu installs and configures everything needed for that role. For example, the **Mail** group installs and configures Postfix, Dovecot, OpenDKIM, Rspamd, Redis, and Certbot together.
+Groups are curated collections of related services. Selecting a group from the menu shows all services that belong to it, letting you manage them together. For example, the **Mail** group gives you access to Postfix, Dovecot, OpenDKIM, Rspamd, Redis, and Certbot in one place.
 
 ### Services
-Individual services can be managed independently — install, uninstall, configure, and run service-specific actions like creating databases or managing users.
+Individual services can be managed independently. Install, uninstall, configure, and run service-specific actions like creating databases or managing users.
 
 ### Actions
-Standalone tasks that don't belong to a specific service — things like installing or uninstalling a package, creating a mailbox, or renewing certificates.
+Actions are individual tasks such as installing or uninstalling a service, creating a database, adding a mailbox, or renewing certificates. Each service and group registers its own actions, which are also accessible directly from the main Actions menu, giving you a single place to find and run any available task without navigating through menus.
 
 ### Self-Registering Modules
-Each module registers itself when sourced at startup. Adding a new service is as simple as dropping a new directory into `modules/services/` — it automatically appears in the menu.
+Each module registers itself when sourced at startup. Adding a new service is as simple as dropping a new directory into `modules/services/`. It automatically appears in the menu next time you start.
 
 ---
 
