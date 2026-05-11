@@ -6,6 +6,15 @@
 # GitHub:  https://github.com/64bit-Paperclip/FirstBoot
 # =============================================================================
 
+
+
+
+
+_mysql_create_db_cleanup(){
+
+}
+
+
 # --- Action ------------------------------------------------------------------
 action_mysql_create_database() {
     

@@ -7,20 +7,6 @@
 # Usage:
 #   sudo bash firstboot.sh
 #
-# Directory structure expected:
-#   firstboot.sh
-#   lib/
-#     common.sh
-#   modules/
-#     hardening.sh
-#     firewall.sh
-#     certbot.sh
-#     mysql.sh
-#     postfix.sh
-#     dovecot.sh
-#     opendkim.sh
-#     rspamd.sh
-#     web.sh
 # =============================================================================
 
 # --- Strict mode (master level) ----------------------------------------------
@@ -39,14 +25,6 @@ MODULE_DIR="$SCRIPT_DIR/modules"
 SERVICE_GROUPS_DIR="$MODULE_DIR/groups"
 SERVICES_DIR="$MODULE_DIR/services"
 ACTIONS_DIR="$MODULE_DIR/actions"
-
-MAIN_MENU_OPTIONS=(
-    "System Status|show_status"
-    "Manage Runtimes|show_status"
-    "Manage By Service Group|groups_menu"
-	"Manage Service|services_menu"
-	"Actions|draw_actions_menu"
-)
 
 # --- Verify directory structure ----------------------------------------------
 [ ! -d "$LIB_DIR" ]              && echo "[x] Cannot find lib/ directory. Expected at: $LIB_DIR" && exit 1
@@ -89,6 +67,21 @@ info "Logging to: $LOG_FILE"
 # --- Status -------------------------------------------------------------------
 show_status
 
+
+MAIN_MENU_OPTIONS=(
+    "System Status|show_status"
+	"---|"
+	"Harden System|show_status"
+	"---|"
+    "Manage Runtimes|show_status"
+    "Manage Service Group|groups_menu"
+	"Manage Service|services_menu"
+	"Manage Users|show_status"
+	"---|"
+	"Run Individual Action|draw_actions_menu"
+	"---|"
+	"FirstBoot Logs|show_status"
+)
 command_menu MAIN_MENU_OPTIONS "Main Menu"
 
 

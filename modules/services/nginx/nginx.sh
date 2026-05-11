@@ -6,41 +6,84 @@
 # GitHub:  https://github.com/64bit-Paperclip/FirstBoot
 # =============================================================================
 
+# --- Service variables -------------------------------------------------------
+NGINX_LABEL="MySQL"
+NGINX_SERVICE="mysql"
+NGINX_PACKAGE="mysql-server"
+NGINX_SVC_VAR="SVC_MYSQL"
+NGINX_GROUP="database"
+NGINX_ENTRY="mysql_entry"
+
 # --- Initialize status variable ----------------------------------------------
 SVC_NGINX="not installed"
+
+# --- Directory variables -----------------------------------------------------
 NGINX_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 NGINX_ACTIONS_DIR="$NGINX_DIR/actions"
 NGINX_UTILS_DIR="$NGINX_DIR/utilities"
 
+# --- Include Utilities -------------------------------------------------------
 source "$NGINX_UTILS_DIR/nginx_blocks.sh"
 
-
+# --- Register ----------------------------------------------------------------
+register_service "$NGINX_LABEL|$NGINX_SERVICE|$NGINX_PACKAGE|$NGINX_SVC_VAR|$NGINX_GROUP|$NGINX_ENTRY"
 
 # --- Source actions ----------------------------------------------------------
 source_service_actions "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
-# --- Menu options ------------------------------------------------------------
-NGINX_MENU_OPTIONS=(
-	"Install Ngnix|action_install_nginx"
-	"Uninstall Ngnix|action_install_nginx"
-	"---|"
-	"Reload|action_nginx_reload"
-    "Restart|action_nginx_restart"
-    "Status|action_nginx_status"
-	"Test Configuration|action_nginx_test_config"
-    "---|"
-    "Create Site|action_nginx_create_site"
-	"Delete Site|action_nginx_delete_site"
-	"Disable Site|action_nginx_disable_site"
-	"Disable All Sites|action_nginx_disable_all_sites"
-    "Enable Site|action_nginx_enable_site"
-	"List Sites|action_nginx_list_sites"
-)
+
+# --- Global Utility Functions ------------------------------------------------
+is_nginx_installed(){
+    pkg_installed "$NGINX_PACKAGE"
+}
+
+
+is_nginx_running(){
+    svc_running "$NGINX_SERVICE"
+}
 
 # --- Entry function ----------------------------------------------------------
 nginx_entry() {
-    command_menu NGINX_MENU_OPTIONS "Nginx"
+    dynamic_command_menu _nginx_generate_menu_options "Nginx"
+    _nginx_cleanup
 }
 
-# --- Register ----------------------------------------------------------------
-register_service "Nginx|nginx|nginx|SVC_NGINX|web|nginx_entry"
+
+_nginx_generate_menu_options() {
+    local -n _out="$1"
+    _out=()
+
+    if ! is_nginx_installed; then
+        _out+=("Install Nginx|action_nginx_install")
+        return 0
+    fi
+
+    _out+=("Install Nginx|action_nginx_install")
+    _out+=("Uninstall Nginx|action_nginx_uninstall")
+    _out+=("---|")
+
+    if is_nginx_running; then
+        _out+=("Stop|action_nginx_stop")
+        _out+=("Restart|action_nginx_restart")
+        _out+=("Reload|action_nginx_reload")
+    else
+        _out+=("Start|action_nginx_start")
+    fi
+
+    _out+=("Status|action_nginx_status")
+    _out+=("Test Configuration|action_nginx_test_config")
+    _out+=("Enable on Boot|action_nginx_enable")
+    _out+=("Disable on Boot|action_nginx_disable")
+    _out+=("---|")
+    _out+=("Create Site|action_nginx_create_site")
+    _out+=("List Sites|action_nginx_list_sites")
+    _out+=("Enable Site|action_nginx_enable_site")
+    _out+=("Disable Site|action_nginx_disable_site")
+    _out+=("Delete Site|action_nginx_delete_site")
+}
+
+_nginx_cleanup()
+{
+
+}
+

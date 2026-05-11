@@ -7,11 +7,39 @@
 # TODO: not yet implemented
 # =============================================================================
 
+# --- Service variables -------------------------------------------------------
+MYSQL_LABEL="MySQL"
+MYSQL_SERVICE="mysql"
+MYSQL_PACKAGE="mysql-server"
+MYSQL_SVC_VAR="SVC_MYSQL"
+MYSQL_GROUP="database"
+MYSQL_ENTRY="mysql_entry"
+
 # --- Initialize status variable ----------------------------------------------
 SVC_MYSQL="not installed"
 
+# --- Directory variables -----------------------------------------------------
+MYSQL_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+MYSQL_ACTIONS_DIR="$MYSQL_DIR/actions"
+
+
+# --- Register ----------------------------------------------------------------
+register_service "$MYSQL_LABEL|$MYSQL_SERVICE|$MYSQL_PACKAGE|$MYSQL_SVC_VAR|$MYSQL_GROUP|$MYSQL_ENTRY"
+
+
 # --- Source actions ----------------------------------------------------------
 source_service_actions "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+
+# --- Global Utility Functions ------------------------------------------------
+is_mysql_installed(){
+    pkg_installed "$MYSQL_PACKAGE"
+}
+
+is_mysql_running(){
+    svc_running "$MYSQL_SERVICE"
+}
+
 
 
 MYSQL_MENU_OPTIONS=(
@@ -30,5 +58,3 @@ mysql_entry() {
     
 }
 
-# --- Register ----------------------------------------------------------------
-register_service "MySQL|mysql|mysql-server|SVC_MYSQL|database|mysql_entry"

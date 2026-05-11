@@ -23,13 +23,15 @@ section() {
     local title="$1"
     local title_len=${#title}
     local total=80
-    local prefix="═══[ "
-    local suffix_len=$(( total - ${#prefix} - title_len - 3 ))
+    local prefix="╔══[ "
+    local suffix_len=$(( total - ${#prefix} - title_len - 5 ))
     local suffix=$(printf '%0.s═' $(seq 1 $suffix_len))
     echo ""
-    echo -e "${CYAN}${prefix}${NC}${BOLD}${title}${CYAN} ]${suffix}${NC}"
+    echo -e "${CYAN}${prefix}${NC}${BOLD}${title}${CYAN} ]${suffix}${NC}╝"
     echo ""
 }
+
+
 
 section_break() {
 
@@ -39,6 +41,22 @@ section_break() {
 	echo -e "${CYAN}═══════════════════════════════════════════════════════════════════════════════${NC}"
 	echo ""
 	echo ""
+}
+
+section_end() {
+
+	[ "${NO_SECTION_UI:-false}" = "true" ] && return 0
+
+    local title="End $1"
+    local title_len=${#title}
+    local total=80
+    local prefix="╚══[ "
+    local suffix_len=$(( total - ${#prefix} - title_len - 4 ))
+    local suffix=$(printf '%0.s═' $(seq 1 $suffix_len))
+    echo ""
+    echo -e "${CYAN}${prefix}${NC}${BOLD}${title}${CYAN} ]${suffix}╗"
+    echo -e "                                                                              ║${NC}"
+    echo ""
 }
 
 draw_banner() {
@@ -53,17 +71,7 @@ draw_banner() {
 	echo -e "${NC}"
 }
 
-draw_main_menu() {
-    section "Main Menu"
-    echo "    1)  System Status"
-	echo "    2)  Manage Runtimes"
-    echo "    3)  Manage By Service Group"
-    echo "    4)  Manage Services"
-    echo "    5)  Run an Action"
-    echo ""
-    echo "    0)  Exit"
-	section_break
-}
+
 
 confirm_prompt() {
     local prompt="${1:-Are you sure?}"
@@ -88,6 +96,56 @@ required_prompt() {
         warn "This field cannot be empty."
     done
     printf -v "$varname" '%s' "$value"
+}
+
+dynamic_command_menu() {
+    local _generate_fn="$1"
+    local _title="$2"
+
+    while true; do
+        local -a _dynamic_options=()
+        "$_generate_fn" _dynamic_options
+
+        section "$_title"
+        local i=1
+        local -a _index_map=()
+        local _idx=0
+        for entry in "${_dynamic_options[@]}"; do
+            IFS='|' read -r label fn <<< "$entry"
+            if [ "$label" = "---" ]; then
+                echo ""
+            else
+                printf "    %d)  %s\n" "$i" "$label"
+                _index_map+=("$_idx")
+                (( i++ ))
+            fi
+            (( _idx++ ))
+        done
+        echo ""
+        echo "    0)  Back"
+        echo ""
+        read -rp "  Selection: " CMD_CHOICE
+        if [ "$CMD_CHOICE" = "0" ]; then
+            break
+        fi
+        if ! [[ "$CMD_CHOICE" =~ ^[0-9]+$ ]]; then
+            warn "Invalid selection."
+            continue
+        fi
+        local _map_idx=$(( CMD_CHOICE - 1 ))
+        if [ "$_map_idx" -lt 0 ] || [ "$_map_idx" -ge "${#_index_map[@]}" ]; then
+            warn "Invalid selection."
+            continue
+        fi
+        local _real_idx="${_index_map[$_map_idx]}"
+        IFS='|' read -r label fn <<< "${_dynamic_options[$_real_idx]}"
+        if declare -f "$fn" > /dev/null 2>&1; then
+            "$fn"
+        else
+            warn "Function '$fn' not found."
+        fi
+    done
+    unset CMD_CHOICE
 }
 
 command_menu() {
