@@ -16,6 +16,7 @@ unset _file MYSQL_DIR
 
 
 MYSQL_MENU_OPTIONS=(
+	"Install MySql|action_install_mysql"
     "List Databases|action_mysql_list_databases"
     "Create Database|action_mysql_create_database"
     "Drop Database|action_mysql_drop_database"
@@ -26,9 +27,9 @@ MYSQL_MENU_OPTIONS=(
     "Status|mysql_status"
 )
 
-# --- Entry function ----------------------------------------------------------
 mysql_entry() {
-    command_menu MYSQL_MENU_OPTIONS "MySQL"
+	command_menu MYSQL_MENU_OPTIONS "MySQL"
+    
 }
 
 # --- Register ----------------------------------------------------------------

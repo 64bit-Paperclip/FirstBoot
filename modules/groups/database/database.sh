@@ -8,8 +8,21 @@
 
 # --- Entry function ----------------------------------------------------------
 setup_database() {
-    # TODO: not yet implemented
-    warn "Database group setup not yet implemented"
+    local -a DATABASE_MENU_OPTIONS=()
+
+    for entry in "${SERVICES[@]}"; do
+        IFS='|' read -r label svc pkg svcvar groups entry_fn <<< "$entry"
+        if [[ ",$groups," == *",database,"* ]]; then
+            DATABASE_MENU_OPTIONS+=("$label|$entry_fn")
+        fi
+    done
+
+    if [ ${#DATABASE_MENU_OPTIONS[@]} -eq 0 ]; then
+        warn "No database services registered."
+        return 1
+    fi
+
+    command_menu DATABASE_MENU_OPTIONS "Database"
 }
 
 # --- Register ----------------------------------------------------------------
