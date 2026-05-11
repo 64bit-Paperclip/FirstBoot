@@ -63,12 +63,7 @@ source "$LIB_DIR/services.sh"
 source "$LIB_DIR/actions.sh"
 source "$LIB_DIR/status.sh"
 
-# --- Logging setup -----------------------------------------------------------
-mkdir -p "$LOG_DIR"
-# Tee all output to log file while still showing on terminal
-exec > >(tee -a "$LOG_FILE") 2>&1
 
-info "Logging to: $LOG_FILE"
 
 # --- Source all modules ------------------------------------------------------
 source_groups
@@ -77,6 +72,13 @@ source_actions
 
 # --- Banner ------------------------------------------------------------------
 draw_banner
+
+# --- Logging setup -----------------------------------------------------------
+mkdir -p "$LOG_DIR"
+# Tee all output to log file while still showing on terminal
+exec > >(tee -a "$LOG_FILE") 2>&1
+
+info "Logging to: $LOG_FILE"
 
 # --- Status -------------------------------------------------------------------
 show_status

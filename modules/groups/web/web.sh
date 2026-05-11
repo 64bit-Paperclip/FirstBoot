@@ -9,8 +9,21 @@
 
 # --- Entry function ----------------------------------------------------------
 setup_web() {
-    # TODO: not yet implemented
-    warn "Web group setup not yet implemented"
+    local -a WEB_MENU_OPTIONS=()
+
+    for entry in "${SERVICES[@]}"; do
+        IFS='|' read -r label svc pkg svcvar groups entry_fn <<< "$entry"
+        if [[ ",$groups," == *",web,"* ]]; then
+            WEB_MENU_OPTIONS+=("$label|$entry_fn")
+        fi
+    done
+
+    if [ ${#WEB_MENU_OPTIONS[@]} -eq 0 ]; then
+        warn "No web services registered."
+        return 1
+    fi
+
+    command_menu WEB_MENU_OPTIONS "Web"
 }
 
 # --- Register ----------------------------------------------------------------
