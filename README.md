@@ -27,14 +27,14 @@ curl -L -o firstboot.zip https://github.com/64bit-Paperclip/FirstBoot/archive/re
 ### 2. Install unzip if needed
 
 ```bash
-apt install unzip -y
+sudo apt update && sudo apt install -y unzip
 ```
 
 ### 3. Extract
 
 ```bash
-unzip firstboot.zip
-cd FirstBoot-master
+unzip firstboot.zip -d firstboot
+cd firstboot
 ```
 
 ### 4. Run
