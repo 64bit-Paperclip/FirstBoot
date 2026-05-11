@@ -14,6 +14,9 @@ source_service_actions "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 # --- Menu options ------------------------------------------------------------
 NGINX_MENU_OPTIONS=(
+	"Install Ngnix|action_install_nginx"
+	"Uninstall Ngnix|action_install_nginx"
+	"---|"
     "Status|action_nginx_status"
     "List Sites|action_nginx_list_sites"
     "---|"
