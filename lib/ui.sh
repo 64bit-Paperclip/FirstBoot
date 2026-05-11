@@ -91,19 +91,23 @@ required_prompt() {
 }
 
 command_menu() {
-    local -n _options="$1"  # nameref to the options array
+    local -n _options="$1"
     local _title="$2"
     while true; do
         section "$_title"
         local i=1
+        local -a _index_map=()
+        local _idx=0
         for entry in "${_options[@]}"; do
             IFS='|' read -r label fn <<< "$entry"
             if [ "$label" = "---" ]; then
                 echo ""
             else
                 printf "    %d)  %s\n" "$i" "$label"
+                _index_map+=("$_idx")
                 (( i++ ))
             fi
+            (( _idx++ ))
         done
         echo ""
         echo "    0)  Back"
@@ -116,16 +120,13 @@ command_menu() {
             warn "Invalid selection."
             continue
         fi
-        local idx=$(( CMD_CHOICE - 1 ))
-        if [ "$idx" -lt 0 ] || [ "$idx" -ge "${#_options[@]}" ]; then
+        local _map_idx=$(( CMD_CHOICE - 1 ))
+        if [ "$_map_idx" -lt 0 ] || [ "$_map_idx" -ge "${#_index_map[@]}" ]; then
             warn "Invalid selection."
             continue
         fi
-        IFS='|' read -r label fn <<< "${_options[$idx]}"
-        if [ "$label" = "---" ]; then
-            warn "Invalid selection."
-            continue
-        fi
+        local _real_idx="${_index_map[$_map_idx]}"
+        IFS='|' read -r label fn <<< "${_options[$_real_idx]}"
         if declare -f "$fn" > /dev/null 2>&1; then
             "$fn"
         else
