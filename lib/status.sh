@@ -72,7 +72,7 @@ show_status() {
         echo ""
     done
 
-	section_break
+	section_end "System Status"
 }
 
 export -f show_status

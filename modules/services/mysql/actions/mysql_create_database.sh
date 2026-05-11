@@ -10,11 +10,6 @@
 
 
 
-_mysql_create_db_cleanup(){
-
-}
-
-
 # --- Action ------------------------------------------------------------------
 action_mysql_create_database() {
     

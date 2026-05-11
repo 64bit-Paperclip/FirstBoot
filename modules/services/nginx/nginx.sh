@@ -82,8 +82,4 @@ _nginx_generate_menu_options() {
     _out+=("Delete Site|action_nginx_delete_site")
 }
 
-_nginx_cleanup()
-{
-
-}
 
