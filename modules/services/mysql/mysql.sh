@@ -7,12 +7,11 @@
 # TODO: not yet implemented
 # =============================================================================
 
+# --- Initialize status variable ----------------------------------------------
+SVC_MYSQL="not installed"
+
 # --- Source actions ----------------------------------------------------------
-MYSQL_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-for _file in $(ls "$MYSQL_DIR/actions"/*.sh 2>/dev/null | sort); do
-    [ -f "$_file" ] && source "$_file"
-done
-unset _file MYSQL_DIR
+source_service_actions "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 
 MYSQL_MENU_OPTIONS=(

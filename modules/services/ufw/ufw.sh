@@ -1,36 +1,35 @@
 #!/bin/bash
 # =============================================================================
-# modules/services/nginx/nginx.sh
+# modules/services/ufw/ufw.sh
 # Do not run directly
 # Author:  Jason Penick
 # GitHub:  https://github.com/64bit-Paperclip/FirstBoot
 # =============================================================================
 
 # --- Initialize status variable ----------------------------------------------
-SVC_NGINX="not installed"
+SVC_UFW="not installed"
 
 # --- Source actions ----------------------------------------------------------
 source_service_actions "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 # --- Menu options ------------------------------------------------------------
-NGINX_MENU_OPTIONS=(
-    "Status|action_nginx_status"
-    "List Sites|action_nginx_list_sites"
+UFW_MENU_OPTIONS=(
+    "Status|action_ufw_status"
+    "List Rules|action_ufw_list_rules"
     "---|"
-    "Create Site|action_nginx_create_site"
-    "Enable Site|action_nginx_enable_site"
-    "Disable Site|action_nginx_disable_site"
-    "Delete Site|action_nginx_delete_site"
+    "Allow Port|action_ufw_allow_port"
+    "Deny Port|action_ufw_deny_port"
+    "Delete Rule|action_ufw_delete_rule"
     "---|"
-    "Test Config|action_nginx_test_config"
-    "Reload|action_nginx_reload"
-    "Restart|action_nginx_restart"
+    "Enable UFW|action_ufw_enable"
+    "Disable UFW|action_ufw_disable"
+    "Reset UFW|action_ufw_reset"
 )
 
 # --- Entry function ----------------------------------------------------------
-nginx_entry() {
-    command_menu NGINX_MENU_OPTIONS "Nginx"
+ufw_entry() {
+    command_menu UFW_MENU_OPTIONS "UFW Firewall"
 }
 
 # --- Register ----------------------------------------------------------------
-register_service "Nginx|nginx|nginx|SVC_NGINX|web|nginx_entry"
+register_service "UFW|ufw|ufw|SVC_UFW|security|ufw_entry"

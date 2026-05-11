@@ -57,6 +57,14 @@ source_services() {
     unset _dir _name
 }
 
+source_service_actions() {
+    local _dir="$1"
+    for _file in $(ls "$_dir/actions"/*.sh 2>/dev/null | sort); do
+        [ -f "$_file" ] && source "$_file"
+    done
+    unset _file
+}
+
 register_service() {
     local entry="$1"
     IFS='|' read -r label svc pkg svcvar groups entry_fn <<< "$entry"

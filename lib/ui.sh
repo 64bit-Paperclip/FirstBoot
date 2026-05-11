@@ -22,7 +22,8 @@ section() {
 
 section_break() {
 	echo ""
-	echo -e "${CYAN}════════════════════════════════════════════════════════════════════════${NC}"
+	echo -e "${CYAN}═══════════════════════════════════════════════════════════════════════════════${NC}"
+	echo ""
 	echo ""
 }
 
@@ -30,10 +31,10 @@ draw_banner() {
 	echo ""
 	echo -e "${CYAN}${BOLD}"
 	echo "╔══════════════════════════════════════════════════════════════════════════════╗"
-	echo "║                                FIRSTBOOT v1.0                                ║"
+	echo -e "║                                ${NC}FIRSTBOOT v1.0{CYAN}                                ║"
 	echo "╠══════════════════════════════════════════════════════════════════════════════╣"
-	echo "║                             Server Setup Toolkit                             ║"
-	echo "║                               Ubuntu 24.04 LTS                               ║"
+	echo -e "║                             ${NC}Server Setup Toolkit{CYAN}                             ║"
+	echo -e "║                               ${NC}Ubuntu 24.04 LTS{CYAN}                               ║"
 	echo "╚══════════════════════════════════════════════════════════════════════════════╝"
 	echo -e "${NC}"
 }
@@ -47,6 +48,7 @@ draw_main_menu() {
     echo ""
     echo "    0)  Exit"
     echo ""
+	section_break
 }
 
 confirm_prompt() {

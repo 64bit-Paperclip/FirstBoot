@@ -1,36 +1,34 @@
 #!/bin/bash
 # =============================================================================
-# modules/services/nginx/nginx.sh
+# modules/services/fail2ban/fail2ban.sh
 # Do not run directly
 # Author:  Jason Penick
 # GitHub:  https://github.com/64bit-Paperclip/FirstBoot
 # =============================================================================
 
 # --- Initialize status variable ----------------------------------------------
-SVC_NGINX="not installed"
+SVC_FAIL2BAN="not installed"
 
 # --- Source actions ----------------------------------------------------------
 source_service_actions "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 # --- Menu options ------------------------------------------------------------
-NGINX_MENU_OPTIONS=(
-    "Status|action_nginx_status"
-    "List Sites|action_nginx_list_sites"
+FAIL2BAN_MENU_OPTIONS=(
+    "Status|action_fail2ban_status"
+    "List Jails|action_fail2ban_list_jails"
+    "List Banned IPs|action_fail2ban_list_banned"
     "---|"
-    "Create Site|action_nginx_create_site"
-    "Enable Site|action_nginx_enable_site"
-    "Disable Site|action_nginx_disable_site"
-    "Delete Site|action_nginx_delete_site"
+    "Ban IP|action_fail2ban_ban_ip"
+    "Unban IP|action_fail2ban_unban_ip"
     "---|"
-    "Test Config|action_nginx_test_config"
-    "Reload|action_nginx_reload"
-    "Restart|action_nginx_restart"
+    "Reload|action_fail2ban_reload"
+    "Restart|action_fail2ban_restart"
 )
 
 # --- Entry function ----------------------------------------------------------
-nginx_entry() {
-    command_menu NGINX_MENU_OPTIONS "Nginx"
+fail2ban_entry() {
+    command_menu FAIL2BAN_MENU_OPTIONS "Fail2ban"
 }
 
 # --- Register ----------------------------------------------------------------
-register_service "Nginx|nginx|nginx|SVC_NGINX|web|nginx_entry"
+register_service "Fail2ban|fail2ban|fail2ban|SVC_FAIL2BAN|security|fail2ban_entry"
