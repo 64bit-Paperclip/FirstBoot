@@ -8,6 +8,13 @@
 
 # --- Initialize status variable ----------------------------------------------
 SVC_NGINX="not installed"
+NGINX_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+NGINX_ACTIONS_DIR="$NGINX_DIR/actions"
+NGINX_UTILS_DIR="$NGINX_DIR/utilities"
+
+source "$NGINX_UTILS_DIR/nginx_blocks.sh"
+
+
 
 # --- Source actions ----------------------------------------------------------
 source_service_actions "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -17,17 +24,17 @@ NGINX_MENU_OPTIONS=(
 	"Install Ngnix|action_install_nginx"
 	"Uninstall Ngnix|action_install_nginx"
 	"---|"
+	"Reload|action_nginx_reload"
+    "Restart|action_nginx_restart"
     "Status|action_nginx_status"
-    "List Sites|action_nginx_list_sites"
+	"Test Configuration|action_nginx_test_config"
     "---|"
     "Create Site|action_nginx_create_site"
+	"Delete Site|action_nginx_delete_site"
+	"Disable Site|action_nginx_disable_site"
+	"Disable All Sites|action_nginx_disable_all_sites"
     "Enable Site|action_nginx_enable_site"
-    "Disable Site|action_nginx_disable_site"
-    "Delete Site|action_nginx_delete_site"
-    "---|"
-    "Test Config|action_nginx_test_config"
-    "Reload|action_nginx_reload"
-    "Restart|action_nginx_restart"
+	"List Sites|action_nginx_list_sites"
 )
 
 # --- Entry function ----------------------------------------------------------
