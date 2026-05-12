@@ -73,7 +73,7 @@ action_nginx_status() {
         done
     fi
 
-    echo ""
+    section_end "Nginx Status"
 }
 
 # --- Register ----------------------------------------------------------------

@@ -51,14 +51,14 @@ _nginx_generate_menu_options() {
     local -n _out="$1"
     _out=()
 
-    if ! is_nginx_installed; then
+    if is_nginx_installed; then
+        _out+=("Uninstall Nginx|action_nginx_uninstall")
+        _out+=("---|")
+    else
         _out+=("Install Nginx|action_nginx_install")
         return 0
     fi
 
-    _out+=("Install Nginx|action_nginx_install")
-    _out+=("Uninstall Nginx|action_nginx_uninstall")
-    _out+=("---|")
 
     if is_nginx_running; then
         _out+=("Stop|action_nginx_stop")
@@ -67,17 +67,16 @@ _nginx_generate_menu_options() {
     else
         _out+=("Start|action_nginx_start")
     fi
-
     _out+=("Status|action_nginx_status")
-    _out+=("Test Configuration|action_nginx_test_config")
     _out+=("Enable on Boot|action_nginx_enable")
     _out+=("Disable on Boot|action_nginx_disable")
     _out+=("---|")
     _out+=("Create Site|action_nginx_create_site")
-    _out+=("List Sites|action_nginx_list_sites")
-    _out+=("Enable Site|action_nginx_enable_site")
     _out+=("Disable Site|action_nginx_disable_site")
     _out+=("Delete Site|action_nginx_delete_site")
+    _out+=("Enable Site|action_nginx_enable_site")
+    _out+=("List Sites|action_nginx_list_sites")
+    _out+=("Test Configuration|action_nginx_test_config")
 }
 
 

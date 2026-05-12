@@ -71,7 +71,6 @@ show_status() {
         done
         echo ""
     done
-
 	section_end "System Status"
 }
 

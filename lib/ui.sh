@@ -24,10 +24,11 @@ section() {
     local title_len=${#title}
     local total=80
     local prefix="╔══[ "
-    local suffix_len=$(( total - ${#prefix} - title_len - 5 ))
+    local suffix_len=$(( total - ${#prefix} - title_len - 3 ))
     local suffix=$(printf '%0.s═' $(seq 1 $suffix_len))
-    echo ""
-    echo -e "${CYAN}${prefix}${NC}${BOLD}${title}${CYAN} ]${suffix}╝${NC}"
+
+    echo -e "                                                                              ${CYAN}║"
+    echo -e "${prefix}${NC}${BOLD}${title}${CYAN} ]${suffix}╝${NC}"
     echo ""
 }
 
@@ -125,24 +126,30 @@ dynamic_command_menu() {
         echo "    0)  Back"
         echo ""
         read -rp "  Selection: " CMD_CHOICE
+
         if [ "$CMD_CHOICE" = "0" ]; then
+            section_end "$_title"
             break
         fi
         if ! [[ "$CMD_CHOICE" =~ ^[0-9]+$ ]]; then
             warn "Invalid selection."
+            section_end "$_title"
             continue
         fi
         local _map_idx=$(( CMD_CHOICE - 1 ))
         if [ "$_map_idx" -lt 0 ] || [ "$_map_idx" -ge "${#_index_map[@]}" ]; then
             warn "Invalid selection."
+            section_end "$_title"
             continue
         fi
         local _real_idx="${_index_map[$_map_idx]}"
         IFS='|' read -r label fn <<< "${_dynamic_options[$_real_idx]}"
         if declare -f "$fn" > /dev/null 2>&1; then
+            section_end "$_title"
             "$fn"
         else
             warn "Function '$fn' not found."
+            section_end "$_title"
         fi
     done
     unset CMD_CHOICE
@@ -172,23 +179,28 @@ command_menu() {
         echo ""
         read -rp "  Selection: " CMD_CHOICE
         if [ "$CMD_CHOICE" = "0" ]; then
+            section_end "$_title"
             break
         fi
         if ! [[ "$CMD_CHOICE" =~ ^[0-9]+$ ]]; then
             warn "Invalid selection."
+            section_end "$_title"
             continue
         fi
         local _map_idx=$(( CMD_CHOICE - 1 ))
         if [ "$_map_idx" -lt 0 ] || [ "$_map_idx" -ge "${#_index_map[@]}" ]; then
             warn "Invalid selection."
+            section_end "$_title"
             continue
         fi
         local _real_idx="${_index_map[$_map_idx]}"
         IFS='|' read -r label fn <<< "${_options[$_real_idx]}"
         if declare -f "$fn" > /dev/null 2>&1; then
+            section_end "$_title"
             "$fn"
         else
             warn "Function '$fn' not found."
+            section_end "$_title"
         fi
     done
     unset CMD_CHOICE
