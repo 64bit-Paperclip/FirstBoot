@@ -98,7 +98,7 @@ _fail2ban_select_jail() {
             _f2b_u_idx=$(( _f2b_u_row + _f2b_u_col * _f2b_u_rows ))
             if [ $_f2b_u_idx -lt $_f2b_u_count ]; then
                 _f2b_u_entry=$(printf "%d) %s" $(( _f2b_u_idx + 1 )) "${_f2b_u_jails[$_f2b_u_idx]}")
-                printf "%-21.21s  " "$_f2b_u_entry"
+                printf "%-25.25s  " "$_f2b_u_entry"
             fi
         done
         echo ""
@@ -233,7 +233,7 @@ _fail2ban_collect_logpath() {
             warn "Log path cannot be empty."
         elif [ ! -f "$_out" ]; then
             warn "File '$_out' does not exist."
-            confirm "Use this path anyway?" && break
+            confirm_prompt "Use this path anyway?" && break
         else
             break
         fi

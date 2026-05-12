@@ -59,6 +59,22 @@ section_end() {
     
 }
 
+sub_section() {
+
+	[ "${NO_SECTION_UI:-false}" = "true" ] && return 0
+
+    local title="$1"
+    local title_len=${#title}
+    local total=80
+    local prefix="   [ "
+    local suffix_len=$(( total - ${#prefix} - title_len - 3 ))
+    local suffix=$(printf '%0.s═' $(seq 1 $suffix_len))
+
+    echo -e "                                                                              ${CYAN}║"
+    echo -e "${prefix}${NC}${BOLD}${title}${CYAN} ]${suffix}${NC}"
+    echo ""
+}
+
 draw_banner() {
 	echo ""
 	echo -e "${CYAN}"

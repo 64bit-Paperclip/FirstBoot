@@ -47,11 +47,9 @@ action_fail2ban_create_jail_filter() {
     unset _FAIL2BAN_SELECTED_JAIL
 
     # Collect jail configuration
-    section "Configure Jail: $_f2b_cjb_selected"
+    sub_section "Configure Jail: $_f2b_cjb_selected"
 
-    local _f2b_cjb_port _f2b_cjb_logpath _f2b_cjb_maxretry _f2b_cjb_bantime _f2b_cjb_findtime
-    _fail2ban_collect_port     _f2b_cjb_port
-    _fail2ban_collect_logpath  _f2b_cjb_logpath
+    local _f2b_cjb_maxretry _f2b_cjb_bantime _f2b_cjb_findtime
     _fail2ban_collect_maxretry _f2b_cjb_maxretry
     _fail2ban_collect_bantime  _f2b_cjb_bantime
     _fail2ban_collect_findtime _f2b_cjb_findtime
