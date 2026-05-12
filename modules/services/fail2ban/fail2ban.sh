@@ -6,29 +6,37 @@
 # GitHub:  https://github.com/64bit-Paperclip/FirstBoot
 # =============================================================================
 
+# --- Service variables -------------------------------------------------------
+FAIL2BAN_LABEL="Fail2ban"
+FAIL2BAN_SERVICE="fail2ban"
+FAIL2BAN_PACKAGE="fail2ban"
+FAIL2BAN_SVC_VAR="SVC_FAIL2BAN"
+FAIL2BAN_GROUP="security"
+FAIL2BAN_ENTRY="fail2ban_entry"
+
 # --- Initialize status variable ----------------------------------------------
 SVC_FAIL2BAN="not installed"
 
-# --- Source actions ----------------------------------------------------------
-source_service_actions "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# --- Directory variables -----------------------------------------------------
+FAIL2BAN_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+FAIL2BAN_ACTIONS_DIR="$FAIL2BAN_DIR/actions"
 
-# --- Menu options ------------------------------------------------------------
-FAIL2BAN_MENU_OPTIONS=(
-    "Status|action_fail2ban_status"
-    "List Jails|action_fail2ban_list_jails"
-    "List Banned IPs|action_fail2ban_list_banned"
-    "---|"
-    "Ban IP|action_fail2ban_ban_ip"
-    "Unban IP|action_fail2ban_unban_ip"
-    "---|"
-    "Reload|action_fail2ban_reload"
-    "Restart|action_fail2ban_restart"
-)
+# --- Global Utility Functions ------------------------------------------------
+is_fail2ban_installed() {
+    pkg_installed "$FAIL2BAN_PACKAGE"
+}
+
+is_fail2ban_running() {
+    svc_running "$FAIL2BAN_SERVICE"
+}
 
 # --- Entry function ----------------------------------------------------------
 fail2ban_entry() {
-    command_menu FAIL2BAN_MENU_OPTIONS "Fail2ban"
+    echo "Fail2ban control not yet complete"
 }
 
 # --- Register ----------------------------------------------------------------
-register_service "Fail2ban|fail2ban|fail2ban|SVC_FAIL2BAN|security|fail2ban_entry"
+register_service "$FAIL2BAN_LABEL|$FAIL2BAN_SERVICE|$FAIL2BAN_PACKAGE|$FAIL2BAN_SVC_VAR|$FAIL2BAN_GROUP|$FAIL2BAN_ENTRY"
+
+# --- Source actions ----------------------------------------------------------
+source_service_actions "$FAIL2BAN_DIR"

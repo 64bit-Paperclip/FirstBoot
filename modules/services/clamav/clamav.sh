@@ -1,42 +1,42 @@
 #!/bin/bash
 # =============================================================================
-# modules/services/ufw/ufw.sh
+# modules/services/clamav/clamav.sh
 # Do not run directly
 # Author:  Jason Penick
 # GitHub:  https://github.com/64bit-Paperclip/FirstBoot
 # =============================================================================
 
 # --- Service variables -------------------------------------------------------
-UFW_LABEL="UFW"
-UFW_SERVICE="ufw"
-UFW_PACKAGE="ufw"
-UFW_SVC_VAR="SVC_UFW"
-UFW_GROUP="security"
-UFW_ENTRY="ufw_entry"
+CLAMAV_LABEL="ClamAV"
+CLAMAV_SERVICE="clamav-daemon"
+CLAMAV_PACKAGE="clamav"
+CLAMAV_SVC_VAR="SVC_CLAMAV"
+CLAMAV_GROUP="mail,security"
+CLAMAV_ENTRY="clamav_entry"
 
 # --- Initialize status variable ----------------------------------------------
-SVC_UFW="not installed"
+SVC_CLAMAV="not installed"
 
 # --- Directory variables -----------------------------------------------------
-UFW_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-UFW_ACTIONS_DIR="$UFW_DIR/actions"
+CLAMAV_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+CLAMAV_ACTIONS_DIR="$CLAMAV_DIR/actions"
 
 # --- Global Utility Functions ------------------------------------------------
-is_ufw_installed() {
-    pkg_installed "$UFW_PACKAGE"
+is_clamav_installed() {
+    pkg_installed "$CLAMAV_PACKAGE"
 }
 
-is_ufw_running() {
-    svc_running "$UFW_SERVICE"
+is_clamav_running() {
+    svc_running "$CLAMAV_SERVICE"
 }
 
 # --- Entry function ----------------------------------------------------------
-ufw_entry() {
-    echo "UFW control not yet complete"
+clamav_entry() {
+    echo "ClamAV control not yet complete"
 }
 
 # --- Register ----------------------------------------------------------------
-register_service "$UFW_LABEL|$UFW_SERVICE|$UFW_PACKAGE|$UFW_SVC_VAR|$UFW_GROUP|$UFW_ENTRY"
+register_service "$CLAMAV_LABEL|$CLAMAV_SERVICE|$CLAMAV_PACKAGE|$CLAMAV_SVC_VAR|$CLAMAV_GROUP|$CLAMAV_ENTRY"
 
 # --- Source actions ----------------------------------------------------------
-source_service_actions "$UFW_DIR"
+source_service_actions "$CLAMAV_DIR"

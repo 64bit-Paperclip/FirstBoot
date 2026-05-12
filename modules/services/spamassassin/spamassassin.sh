@@ -1,42 +1,42 @@
 #!/bin/bash
 # =============================================================================
-# modules/services/ufw/ufw.sh
+# modules/services/spamassassin/spamassassin.sh
 # Do not run directly
 # Author:  Jason Penick
 # GitHub:  https://github.com/64bit-Paperclip/FirstBoot
 # =============================================================================
 
 # --- Service variables -------------------------------------------------------
-UFW_LABEL="UFW"
-UFW_SERVICE="ufw"
-UFW_PACKAGE="ufw"
-UFW_SVC_VAR="SVC_UFW"
-UFW_GROUP="security"
-UFW_ENTRY="ufw_entry"
+SPAMASSASSIN_LABEL="SpamAssassin"
+SPAMASSASSIN_SERVICE="spamassassin"
+SPAMASSASSIN_PACKAGE="spamassassin"
+SPAMASSASSIN_SVC_VAR="SVC_SPAMASSASSIN"
+SPAMASSASSIN_GROUP="mail"
+SPAMASSASSIN_ENTRY="spamassassin_entry"
 
 # --- Initialize status variable ----------------------------------------------
-SVC_UFW="not installed"
+SVC_SPAMASSASSIN="not installed"
 
 # --- Directory variables -----------------------------------------------------
-UFW_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-UFW_ACTIONS_DIR="$UFW_DIR/actions"
+SPAMASSASSIN_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+SPAMASSASSIN_ACTIONS_DIR="$SPAMASSASSIN_DIR/actions"
 
 # --- Global Utility Functions ------------------------------------------------
-is_ufw_installed() {
-    pkg_installed "$UFW_PACKAGE"
+is_spamassassin_installed() {
+    pkg_installed "$SPAMASSASSIN_PACKAGE"
 }
 
-is_ufw_running() {
-    svc_running "$UFW_SERVICE"
+is_spamassassin_running() {
+    svc_running "$SPAMASSASSIN_SERVICE"
 }
 
 # --- Entry function ----------------------------------------------------------
-ufw_entry() {
-    echo "UFW control not yet complete"
+spamassassin_entry() {
+    echo "SpamAssassin control not yet complete"
 }
 
 # --- Register ----------------------------------------------------------------
-register_service "$UFW_LABEL|$UFW_SERVICE|$UFW_PACKAGE|$UFW_SVC_VAR|$UFW_GROUP|$UFW_ENTRY"
+register_service "$SPAMASSASSIN_LABEL|$SPAMASSASSIN_SERVICE|$SPAMASSASSIN_PACKAGE|$SPAMASSASSIN_SVC_VAR|$SPAMASSASSIN_GROUP|$SPAMASSASSIN_ENTRY"
 
 # --- Source actions ----------------------------------------------------------
-source_service_actions "$UFW_DIR"
+source_service_actions "$SPAMASSASSIN_DIR"

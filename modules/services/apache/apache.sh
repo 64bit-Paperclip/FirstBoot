@@ -1,42 +1,42 @@
 #!/bin/bash
 # =============================================================================
-# modules/services/ufw/ufw.sh
+# modules/services/apache/apache.sh
 # Do not run directly
 # Author:  Jason Penick
 # GitHub:  https://github.com/64bit-Paperclip/FirstBoot
 # =============================================================================
 
 # --- Service variables -------------------------------------------------------
-UFW_LABEL="UFW"
-UFW_SERVICE="ufw"
-UFW_PACKAGE="ufw"
-UFW_SVC_VAR="SVC_UFW"
-UFW_GROUP="security"
-UFW_ENTRY="ufw_entry"
+APACHE_LABEL="Apache"
+APACHE_SERVICE="apache2"
+APACHE_PACKAGE="apache2"
+APACHE_SVC_VAR="SVC_APACHE"
+APACHE_GROUP="web"
+APACHE_ENTRY="apache_entry"
 
 # --- Initialize status variable ----------------------------------------------
-SVC_UFW="not installed"
+SVC_APACHE="not installed"
 
 # --- Directory variables -----------------------------------------------------
-UFW_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-UFW_ACTIONS_DIR="$UFW_DIR/actions"
+APACHE_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+APACHE_ACTIONS_DIR="$APACHE_DIR/actions"
 
 # --- Global Utility Functions ------------------------------------------------
-is_ufw_installed() {
-    pkg_installed "$UFW_PACKAGE"
+is_apache_installed() {
+    pkg_installed "$APACHE_PACKAGE"
 }
 
-is_ufw_running() {
-    svc_running "$UFW_SERVICE"
+is_apache_running() {
+    svc_running "$APACHE_SERVICE"
 }
 
 # --- Entry function ----------------------------------------------------------
-ufw_entry() {
-    echo "UFW control not yet complete"
+apache_entry() {
+    echo "Apache control not yet complete"
 }
 
 # --- Register ----------------------------------------------------------------
-register_service "$UFW_LABEL|$UFW_SERVICE|$UFW_PACKAGE|$UFW_SVC_VAR|$UFW_GROUP|$UFW_ENTRY"
+register_service "$APACHE_LABEL|$APACHE_SERVICE|$APACHE_PACKAGE|$APACHE_SVC_VAR|$APACHE_GROUP|$APACHE_ENTRY"
 
 # --- Source actions ----------------------------------------------------------
-source_service_actions "$UFW_DIR"
+source_service_actions "$APACHE_DIR"

@@ -37,7 +37,7 @@ is_nginx_running(){
 # --- Entry function ----------------------------------------------------------
 nginx_entry() {
     dynamic_command_menu _nginx_generate_menu_options "Nginx"
-    _nginx_cleanup
+    
 }
 
 # --- Register ----------------------------------------------------------------
