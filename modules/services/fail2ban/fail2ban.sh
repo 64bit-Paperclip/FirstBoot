@@ -20,6 +20,11 @@ SVC_FAIL2BAN="not installed"
 # --- Directory variables -----------------------------------------------------
 FAIL2BAN_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 FAIL2BAN_ACTIONS_DIR="$FAIL2BAN_DIR/actions"
+FAIL2BAN_UTILITIES_DIR="$FAIL2BAN_DIR/utilities"
+
+
+# --- Include Utilities -------------------------------------------------------
+source "$FAIL2BAN_UTILITIES_DIR/fail2ban_utilities.sh"
 
 # --- Global Utility Functions ------------------------------------------------
 is_fail2ban_installed() {

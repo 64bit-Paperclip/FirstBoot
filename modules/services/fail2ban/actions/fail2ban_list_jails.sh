@@ -23,21 +23,18 @@ action_fail2ban_list_jails() {
     if ! is_fail2ban_running; then
         warn "Fail2ban is not running -- active jail information unavailable."
     else
-        local _F2B_LJ_JAILS
-        _F2B_LJ_JAILS=$(fail2ban-client status 2>/dev/null | grep "Jail list" | sed 's/.*Jail list://;s/,//g')
+        local -a _F2B_LJ_ACTIVE=()
+        _fail2ban_get_active_jails _F2B_LJ_ACTIVE
 
-        if [ -z "$_F2B_LJ_JAILS" ]; then
+        if [ ${#_F2B_LJ_ACTIVE[@]} -eq 0 ]; then
             echo "    No active jails."
         else
             printf "    %-25s %-10s %-10s %s\n" "Jail" "Banned" "Failed" "Ban time"
             printf "    %-25s %-10s %-10s %s\n" "-------------------------" "----------" "----------" "--------"
-            for _F2B_LJ_JAIL in $_F2B_LJ_JAILS; do
-                _F2B_LJ_JAIL=$(echo "$_F2B_LJ_JAIL" | xargs)
-                [ -z "$_F2B_LJ_JAIL" ] && continue
-                local _F2B_LJ_STATUS _F2B_LJ_BANNED _F2B_LJ_FAILED _F2B_LJ_BANTIME
-                _F2B_LJ_STATUS=$(fail2ban-client status "$_F2B_LJ_JAIL" 2>/dev/null)
-                _F2B_LJ_BANNED=$(echo "$_F2B_LJ_STATUS" | grep "Currently banned" | awk '{print $NF}')
-                _F2B_LJ_FAILED=$(echo "$_F2B_LJ_STATUS" | grep "Total failed" | awk '{print $NF}')
+            for _F2B_LJ_JAIL in "${_F2B_LJ_ACTIVE[@]}"; do
+                local _F2B_LJ_BANNED _F2B_LJ_FAILED _F2B_LJ_BANTIME
+                _F2B_LJ_BANNED=$(_fail2ban_get_jail_banned "$_F2B_LJ_JAIL")
+                _F2B_LJ_FAILED=$(_fail2ban_get_jail_failed "$_F2B_LJ_JAIL")
                 _F2B_LJ_BANTIME=$(fail2ban-client get "$_F2B_LJ_JAIL" bantime 2>/dev/null)
                 printf "    %-25s %-10s %-10s %s\n" "$_F2B_LJ_JAIL" "${_F2B_LJ_BANNED:-0}" "${_F2B_LJ_FAILED:-0}" "${_F2B_LJ_BANTIME:-default}"
             done
@@ -49,17 +46,19 @@ action_fail2ban_list_jails() {
     echo -e "  ${BOLD}Configured Jails (jail.d/):${NC}"
     echo ""
 
-    if [ ! -d /etc/fail2ban/jail.d ] || [ -z "$(ls /etc/fail2ban/jail.d/*.conf 2>/dev/null)" ]; then
+    local -a _F2B_LJ_ALL=()
+    _fail2ban_get_jail_names _F2B_LJ_ALL
+
+    if [ ${#_F2B_LJ_ALL[@]} -eq 0 ]; then
         echo "    No jails configured in jail.d/."
     else
         printf "    %-25s %-20s %s\n" "Jail" "Config File" "Status"
         printf "    %-25s %-20s %s\n" "-------------------------" "--------------------" "----------"
-        for _F2B_LJ_FILE in /etc/fail2ban/jail.d/*.conf; do
-            local _F2B_LJ_JAIL_NAME _F2B_LJ_ENABLED
-            _F2B_LJ_JAIL_NAME=$(grep -E "^\[.+\]" "$_F2B_LJ_FILE" | head -1 | tr -d '[]')
-            _F2B_LJ_ENABLED=$(grep "^enabled" "$_F2B_LJ_FILE" | awk '{print $3}')
-            [ "$_F2B_LJ_JAIL_NAME" = "DEFAULT" ] && continue
-            printf "    %-25s %-20s " "$_F2B_LJ_JAIL_NAME" "$(basename "$_F2B_LJ_FILE")"
+        for _F2B_LJ_JAIL in "${_F2B_LJ_ALL[@]}"; do
+            local _F2B_LJ_FILE _F2B_LJ_ENABLED
+            _F2B_LJ_FILE=$(_fail2ban_get_jail_file "$_F2B_LJ_JAIL")
+            _F2B_LJ_ENABLED=$(grep "^enabled" "$_F2B_LJ_FILE" 2>/dev/null | awk '{print $3}')
+            printf "    %-25s %-20s " "$_F2B_LJ_JAIL" "$(basename "$_F2B_LJ_FILE")"
             if [ "${_F2B_LJ_ENABLED:-true}" = "true" ]; then
                 echo -e "${GREEN}enabled${NC}"
             else
@@ -69,9 +68,6 @@ action_fail2ban_list_jails() {
     fi
 
     echo ""
-
-    unset _F2B_LJ_JAILS _F2B_LJ_JAIL _F2B_LJ_STATUS _F2B_LJ_BANNED _F2B_LJ_FAILED
-    unset _F2B_LJ_BANTIME _F2B_LJ_FILE _F2B_LJ_JAIL_NAME _F2B_LJ_ENABLED
 }
 
 # --- Register ----------------------------------------------------------------

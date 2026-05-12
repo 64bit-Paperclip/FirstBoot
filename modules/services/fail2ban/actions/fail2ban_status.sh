@@ -8,21 +8,20 @@
 
 # --- Action ------------------------------------------------------------------
 action_fail2ban_status() {
-
     section "Fail2ban Status"
 
-    # State
+    # --- State ---------------------------------------------------------------
     if ! is_fail2ban_installed; then
         echo -e "  ${BOLD}State:${NC}        $(colorize_status "not installed")"
+        section_end "Fail2ban Status"
         return 0
     elif ! is_fail2ban_running; then
         echo -e "  ${BOLD}State:${NC}        $(colorize_status "stopped")"
-        echo -e "  ${BOLD}Version:${NC}      $(fail2ban-client version 2>/dev/null | head -1)"
-        return 0
     else
         echo -e "  ${BOLD}State:${NC}        $(colorize_status "running")"
-        echo -e "  ${BOLD}Version:${NC}      $(fail2ban-client version 2>/dev/null | head -1)"
     fi
+
+    echo -e "  ${BOLD}Version:${NC}      $(fail2ban-client version 2>/dev/null | head -1)"
 
     if systemctl is-enabled --quiet fail2ban; then
         echo -e "  ${BOLD}Boot start:${NC}   ${GREEN}enabled${NC}"
@@ -30,67 +29,47 @@ action_fail2ban_status() {
         echo -e "  ${BOLD}Boot start:${NC}   ${YELLOW}disabled${NC}"
     fi
 
-    # Default configuration
+    # --- Default configuration -----------------------------------------------
     echo ""
     echo -e "  ${BOLD}Default Configuration:${NC}"
     echo ""
-    local _default_bantime _default_findtime _default_maxretry
-    _default_bantime=$(fail2ban-client get sshd bantime 2>/dev/null || grep -A5 "^\[DEFAULT\]" /etc/fail2ban/jail.local 2>/dev/null | grep "^bantime" | awk '{print $3}')
-    _default_findtime=$(fail2ban-client get sshd findtime 2>/dev/null || grep -A5 "^\[DEFAULT\]" /etc/fail2ban/jail.local 2>/dev/null | grep "^findtime" | awk '{print $3}')
-    _default_maxretry=$(fail2ban-client get sshd maxretry 2>/dev/null || grep -A5 "^\[DEFAULT\]" /etc/fail2ban/jail.local 2>/dev/null | grep "^maxretry" | awk '{print $3}')
-    echo "    Ban time:     ${_default_bantime:-unknown}"
-    echo "    Find time:    ${_default_findtime:-unknown}"
-    echo "    Max retries:  ${_default_maxretry:-unknown}"
+    local _F2B_ST_BANTIME _F2B_ST_FINDTIME _F2B_ST_MAXRETRY
+    _F2B_ST_BANTIME=$(grep -A20 "^\[DEFAULT\]" /etc/fail2ban/jail.local 2>/dev/null | grep "^bantime" | head -1 | awk '{print $3}')
+    _F2B_ST_FINDTIME=$(grep -A20 "^\[DEFAULT\]" /etc/fail2ban/jail.local 2>/dev/null | grep "^findtime" | head -1 | awk '{print $3}')
+    _F2B_ST_MAXRETRY=$(grep -A20 "^\[DEFAULT\]" /etc/fail2ban/jail.local 2>/dev/null | grep "^maxretry" | head -1 | awk '{print $3}')
+    echo "    Ban time:     ${_F2B_ST_BANTIME:-not set}"
+    echo "    Find time:    ${_F2B_ST_FINDTIME:-not set}"
+    echo "    Max retries:  ${_F2B_ST_MAXRETRY:-not set}"
 
-    # Jail summary
+    # --- Jail summary --------------------------------------------------------
     echo ""
     echo -e "  ${BOLD}Jails:${NC}"
     echo ""
-    local _jails
-    _jails=$(fail2ban-client status 2>/dev/null | grep "Jail list" | sed 's/.*Jail list://;s/,//g')
-    if [ -z "$_jails" ]; then
-        echo "    No jails active."
+
+    if ! is_fail2ban_running; then
+        warn "Fail2ban is not running -- jail information unavailable."
+        section_end "Fail2ban Status"
+        return 0
+    fi
+
+    local -a _F2B_ST_ACTIVE=()
+    _fail2ban_get_active_jails _F2B_ST_ACTIVE
+
+    if [ ${#_F2B_ST_ACTIVE[@]} -eq 0 ]; then
+        echo "    No active jails."
     else
-        printf "    %-20s %-10s %-10s %s\n" "Jail" "Status" "Banned" "Total failed"
-        printf "    %-20s %-10s %-10s %s\n" "--------------------" "----------" "----------" "------------"
-        for jail in $_jails; do
-            jail=$(echo "$jail" | xargs)
-            [ -z "$jail" ] && continue
-            local _status _banned _failed
-            _status=$(fail2ban-client status "$jail" 2>/dev/null)
-            _banned=$(echo "$_status" | grep "Currently banned" | awk '{print $NF}')
-            _failed=$(echo "$_status" | grep "Total failed" | awk '{print $NF}')
-            local _jail_status="${GREEN}active${NC}"
-            printf "    %-20s " "$jail"
-            echo -ne "$_jail_status"
-            printf "    %-10s %s\n" "${_banned:-0}" "${_failed:-0}"
+        printf "    %-25s %-10s %-10s %s\n" "Jail" "Banned" "Failed" "Ban time"
+        printf "    %-25s %-10s %-10s %s\n" "-------------------------" "----------" "----------" "--------"
+        for _F2B_ST_JAIL in "${_F2B_ST_ACTIVE[@]}"; do
+            local _F2B_ST_BANNED _F2B_ST_FAILED _F2B_ST_BANTIME_JAIL
+            _F2B_ST_BANNED=$(_fail2ban_get_jail_banned "$_F2B_ST_JAIL")
+            _F2B_ST_FAILED=$(_fail2ban_get_jail_failed "$_F2B_ST_JAIL")
+            _F2B_ST_BANTIME_JAIL=$(fail2ban-client get "$_F2B_ST_JAIL" bantime 2>/dev/null)
+            printf "    %-25s %-10s %-10s %s\n" "$_F2B_ST_JAIL" "${_F2B_ST_BANNED:-0}" "${_F2B_ST_FAILED:-0}" "${_F2B_ST_BANTIME_JAIL:-default}"
         done
     fi
 
-    # Recently banned IPs
-    echo ""
-    echo -e "  ${BOLD}Currently Banned IPs:${NC}"
-    echo ""
-    local _any_banned=false
-    for jail in $_jails; do
-        jail=$(echo "$jail" | xargs)
-        [ -z "$jail" ] && continue
-        local _banned_ips
-        _banned_ips=$(fail2ban-client status "$jail" 2>/dev/null | grep "Banned IP list" | sed 's/.*Banned IP list://' | xargs)
-        if [ -n "$_banned_ips" ]; then
-            _any_banned=true
-            for ip in $_banned_ips; do
-                printf "    %-20s %s\n" "$ip" "[$jail]"
-            done
-        fi
-    done
-    if [ "$_any_banned" = false ]; then
-        echo "    No IPs currently banned."
-    fi
-
     section_end "Fail2ban Status"
-
-    unset _bantime _findtime _maxretry _jails _status _banned _failed _banned_ips _any_banned _jail_status
 }
 
 # --- Register ----------------------------------------------------------------
