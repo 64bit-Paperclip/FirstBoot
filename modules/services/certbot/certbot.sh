@@ -14,7 +14,7 @@ CERTBOT_SVC_VAR="SVC_CERTBOT"
 CERTBOT_GROUP="security,web,mail"
 CERTBOT_ENTRY="certbot_entry"
 
-Initialize status variable ----------------------------------------------
+# --- Initialize status variable ----------------------------------------------
 SVC_NGINX="not installed"
 
 # --- Directory variables -----------------------------------------------------

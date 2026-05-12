@@ -1,42 +1,42 @@
 #!/bin/bash
 # =============================================================================
-# modules/services/clamav/clamav.sh
+# modules/services/postgresql/postgresql.sh
 # Do not run directly
 # Author:  Jason Penick
 # GitHub:  https://github.com/64bit-Paperclip/FirstBoot
 # =============================================================================
 
 # --- Service variables -------------------------------------------------------
-CLAMAV_LABEL="ClamAV"
-CLAMAV_SERVICE="clamav-daemon"
-CLAMAV_PACKAGE="clamav"
-CLAMAV_SVC_VAR="SVC_CLAMAV"
-CLAMAV_GROUP="mail,security"
-CLAMAV_ENTRY="clamav_entry"
+POSTGRESQL_LABEL="PostgreSQL"
+POSTGRESQL_SERVICE="postgresql"
+POSTGRESQL_PACKAGE="postgresql"
+POSTGRESQL_SVC_VAR="SVC_POSTGRESQL"
+POSTGRESQL_GROUP="database"
+POSTGRESQL_ENTRY="postgresql_entry"
 
 # --- Initialize status variable ----------------------------------------------
-SVC_CLAMAV="not installed"
+SVC_POSTGRESQL="not installed"
 
 # --- Directory variables -----------------------------------------------------
-CLAMAV_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-CLAMAV_ACTIONS_DIR="$CLAMAV_DIR/actions"
+POSTGRESQL_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+POSTGRESQL_ACTIONS_DIR="$POSTGRESQL_DIR/actions"
 
 # --- Global Utility Functions ------------------------------------------------
-is_clamav_installed() {
-    pkg_installed "$CLAMAV_PACKAGE"
+is_postgresql_installed() {
+    pkg_installed "$POSTGRESQL_PACKAGE"
 }
 
-is_clamav_running() {
-    svc_running "$CLAMAV_SERVICE"
+is_postgresql_running() {
+    svc_running "$POSTGRESQL_SERVICE"
 }
 
 # --- Entry function ----------------------------------------------------------
-clamav_entry() {
-    echo "ClamAV control not yet complete"
+postgresql_entry() {
+    echo "PostgreSQL control not yet complete"
 }
 
 # --- Register ----------------------------------------------------------------
-register_service "$CLAMAV_LABEL|$CLAMAV_SERVICE|$CLAMAV_PACKAGE|$CLAMAV_SVC_VAR|$CLAMAV_GROUP|$CLAMAV_ENTRY"
+register_service "$POSTGRESQL_LABEL|$POSTGRESQL_SERVICE|$POSTGRESQL_PACKAGE|$POSTGRESQL_SVC_VAR|$POSTGRESQL_GROUP|$POSTGRESQL_ENTRY"
 
 # --- Source actions ----------------------------------------------------------
-source_service_actions "$CLAMAV_DIR"
+source_service_actions "$POSTGRESQL_DIR"
