@@ -43,7 +43,7 @@ is_running() {
 
 
 source_services() {
-    section "Sourcing Services"
+    
     local _dir
     for _dir in "$SERVICES_DIR"/*/; do
         local _name

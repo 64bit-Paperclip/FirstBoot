@@ -136,7 +136,7 @@ dynamic_command_menu() {
             if [ "$label" = "---" ]; then
                 if [ -n "$fn" ]; then
                     echo ""
-                    echo "  -- $fn --"
+                    echo -e "    -[ ${BOLD}$fn${NC} ]-"
                 else
                     echo ""
                 fi
@@ -208,7 +208,7 @@ command_menu() {
             if [ "$label" = "---" ]; then
                 if [ -n "$fn" ]; then
                     echo ""
-                    echo "  -[ $fn ]-"
+                    echo "    -[ $fn ]-"
                 else
                     echo ""
                 fi

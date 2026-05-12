@@ -36,7 +36,8 @@ action_mysql_list_databases() {
         size=$(mysql -u root -e "SELECT ROUND(SUM(data_length + index_length) / 1024 / 1024, 2) FROM information_schema.tables WHERE table_schema='${db}';" 2>/dev/null | grep -v "^ROUND")
         printf "    %-30s %s MB\n" "$db" "${size:-0}"
     done
-    echo ""
+    section_end "MySql Databases"
+    wait_for_any_key
 }
 
 # --- Register ----------------------------------------------------------------

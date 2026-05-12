@@ -36,7 +36,10 @@ action_mysql_list_users() {
     echo "$users" | tail -n +2 | while IFS=$'\t' read -r user host plugin; do
         printf "    %-20s %-30s %s\n" "$user" "$host" "$plugin"
     done
+    section_end "MySQL Users"
+    
     echo ""
+    wait_for_any_key
 }
 
 # --- Register ----------------------------------------------------------------

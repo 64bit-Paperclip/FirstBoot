@@ -58,6 +58,7 @@ _mysql_generate_menu_options() {
 
     _out+=("Enable on Boot|action_mysql_enable_on_boot")
     _out+=("Disable on Boot|action_mysql_disable_on_boot")
+    _out+=("Status|action_mysql_status")
     _out+=("---|Manage Databases")
     _out+=("Backup Database|action_mysql_backup_database")
     _out+=("Create Database|action_mysql_create_database")
