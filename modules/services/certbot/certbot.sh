@@ -8,7 +8,7 @@
  
 # --- Service variables -------------------------------------------------------
 CERTBOT_LABEL="Certbot"
-CERTBOT_SERVICE="certbot"
+CERTBOT_SERVICE="certbot.timer"
 CERTBOT_PACKAGE="certbot"
 CERTBOT_SVC_VAR="SVC_CERTBOT"
 CERTBOT_GROUP="security,web,mail"
