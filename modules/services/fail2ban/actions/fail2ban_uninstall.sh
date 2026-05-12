@@ -16,7 +16,7 @@ action_fail2ban_uninstall() {
 
     section "Uninstalling Fail2ban"
 
-    confirm "This will remove Fail2ban and all its configuration. Are you sure?" || return 1
+    confirm_prompt "This will remove Fail2ban and all its configuration. Are you sure?" || return 1
 
     info "Stopping Fail2ban..."
     systemctl stop fail2ban

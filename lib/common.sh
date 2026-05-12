@@ -26,14 +26,14 @@ error() {
     exit 1
 }
 
-# Check if current user is root (UID 0)
+# Check if current user is logged in directly as root
 is_user_root() {
-    [ "$EUID" -eq 0 ]
+    [ "$UID" -eq 0 ]
 }
 
 # Check if current user has sudo privileges
 is_user_super_user() {
-    groups 2>/dev/null | grep -qw "sudo"
+    [ "$EUID" -eq 0 ]
 }
 
 is_firstboot_installed() {
