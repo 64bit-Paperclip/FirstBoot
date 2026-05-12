@@ -8,9 +8,9 @@ No web panel. No bloat. Just bash.
 
 ## Background
 
-I set up Linux servers often enough that it's a regular part of my work, but not so often that I remember every command, config file location, and gotcha off the top of my head. Over time I ended up with a scattered collection of half-baked scripts I'd pull in whenever I needed them — no consistency, no structure, nothing I'd trust to hand to anyone else.
+I set up Linux servers often enough that it's a regular part of my work, but not so often that I remember every command, config file location, and gotcha off the top of my head. Over time I ended up with a scattered collection of half-baked scripts I'd pull in whenever I needed them. No consistency, no structure, nothing I'd want to hand to anyone else.
 
-FirstBoot is the thing I actually wanted: one toolkit that walks you through everything in the right order, asks the right questions, and leaves you with a correctly configured server — without requiring you to remember it all from scratch every time.
+FirstBoot is the thing I actually wanted: one toolkit that walks you through everything in the right order, asks the right questions, and leaves you with a correctly configured server; without requiring you to remember it all from scratch every time.
 
 ---
 

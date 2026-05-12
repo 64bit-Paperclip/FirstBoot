@@ -129,7 +129,12 @@ dynamic_command_menu() {
         for entry in "${_dynamic_options[@]}"; do
             IFS='|' read -r label fn <<< "$entry"
             if [ "$label" = "---" ]; then
-                echo ""
+                if [ -n "$fn" ]; then
+                    echo ""
+                    echo "  -- $fn --"
+                else
+                    echo ""
+                fi
             else
                 printf "    %d)  %s\n" "$i" "$label"
                 _index_map+=("$_idx")
@@ -181,7 +186,12 @@ command_menu() {
         for entry in "${_options[@]}"; do
             IFS='|' read -r label fn <<< "$entry"
             if [ "$label" = "---" ]; then
-                echo ""
+                if [ -n "$fn" ]; then
+                    echo ""
+                    echo "  -- $fn --"
+                else
+                    echo ""
+                fi
             else
                 printf "    %d)  %s\n" "$i" "$label"
                 _index_map+=("$_idx")
