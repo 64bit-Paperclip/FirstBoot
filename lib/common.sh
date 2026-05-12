@@ -36,10 +36,10 @@ is_user_super_user() {
     groups 2>/dev/null | grep -qw "sudo"
 }
 
-is_installed() {
+is_firstboot_installed() {
     [ "$FIRSTBOOT_SCRIPT_DIR" = "$FIRSTBOOT_INSTALL_DIR" ]
 }
 
-is_portable() {
-    ! is_installed
+is_firstboot_portable() {
+    ! is_firstboot_installed
 }

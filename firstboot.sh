@@ -61,6 +61,9 @@ if is_user_root; then
     warn "You are currently logged in and running FirstBoot as root."
 fi
 
+if is_firstboot_portable; then
+    warn "You are running FirstBoot in portable mode. Some Features may not be available."
+fi
 
 # --- Logging setup -----------------------------------------------------------
 mkdir -p "$LOG_DIR"
