@@ -88,6 +88,11 @@ draw_banner() {
 }
 
 
+wait_for_any_key(){
+    read -rp "  [ Press any key to continue ]" -n1
+    echo -e "\r\033[2K"
+}
+
 
 confirm_prompt() {
     local prompt="${1:-Are you sure?}"

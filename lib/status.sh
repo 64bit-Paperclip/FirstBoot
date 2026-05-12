@@ -72,9 +72,10 @@ show_status() {
         echo ""
     done
 
-    read -rp "     [ Press any key to continue ]" -n1
-    echo -e "\r\033[2K"
+    
 	section_end "System Status"
+    echo ""
+    wait_for_any_key
 }
 
 export -f show_status

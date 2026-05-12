@@ -70,6 +70,8 @@ action_fail2ban_status() {
     fi
 
     section_end "Fail2ban Status"
+    echo ""
+    wait_for_any_key
 }
 
 # --- Register ----------------------------------------------------------------

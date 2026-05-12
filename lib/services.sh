@@ -131,7 +131,12 @@ draw_services_menu() {
     local i=1
     for entry in "${SERVICES[@]}"; do
         IFS='|' read -r label svc pkg svcvar groups entry_fn <<< "$entry"
-        printf "    %d)  %-20s %s\n" "$i" "$label" "$(colorize_status "${!svcvar:-not installed}")"
+        if pkg_installed "$pkg"; then
+            local status="installed"
+        else
+            local status="not installed"
+        fi
+        printf "    %d)  %-20s %s\n" "$i" "$label" "$(colorize_status "$status")"
         (( i++ ))
     done
     echo ""

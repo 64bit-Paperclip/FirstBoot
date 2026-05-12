@@ -36,7 +36,7 @@ is_mysql_running(){
 }
 
 MYSQL_MENU_OPTIONS=(
-	"Install MySql|action_install_mysql"
+	"Install MySql|action_mysql_install"
 	"Uninstall MySql|action_uninstall_mysql"
 	"---|"
     "Create Database|action_mysql_create_database"
