@@ -6,19 +6,29 @@ No web panel. No bloat. Just bash.
 
 ---
 
+## Background
+
+I set up Linux servers often enough that it's a regular part of my work, but not so often that I remember every command, config file location, and gotcha off the top of my head. Over time I ended up with a scattered collection of half-baked scripts I'd pull in whenever I needed them — no consistency, no structure, nothing I'd trust to hand to anyone else.
+
+FirstBoot is the thing I actually wanted: one toolkit that walks you through everything in the right order, asks the right questions, and leaves you with a correctly configured server — without requiring you to remember it all from scratch every time.
+
+---
+
 ## What It Does
 
 Setting up a Linux server from scratch means remembering the right sequence of commands, config file locations, security steps, and gotchas. FirstBoot handles that for you.
 
 Pick what you want to install from a menu. Answer the questions. Get a correctly configured, production-ready service. Come back when you need to add something, change something, or check on something.
 
-**Currently supported:**
+**Planned support includes:**
 
 - **Security** — SSH hardening, UFW firewall, Fail2ban, unattended security updates
 - **Mail** — Postfix, Dovecot, OpenDKIM, Rspamd, ClamAV, virtual mailboxes via MySQL
 - **Web** — Nginx, Apache, SSL via Certbot, virtual host management
 - **Database** — MySQL, MariaDB, PostgreSQL, MongoDB
 - **Other** — Redis, Docker, Node.js, PHP-FPM, Supervisor
+
+> **Status:** FirstBoot is in active development. Most modules are not yet implemented. The structure, conventions, and extension API are being built out first.
 
 ---
 
