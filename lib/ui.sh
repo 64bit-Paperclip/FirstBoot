@@ -203,7 +203,7 @@ command_menu() {
             if [ "$label" = "---" ]; then
                 if [ -n "$fn" ]; then
                     echo ""
-                    echo "  -- $fn --"
+                    echo "  -[ $fn ]-"
                 else
                     echo ""
                 fi

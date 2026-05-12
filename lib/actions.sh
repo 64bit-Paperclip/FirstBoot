@@ -8,12 +8,12 @@
 # =============================================================================
 
 source_actions() {
-    section "Sourcing Actions"
+    
     local _file
     for _file in "$ACTIONS_DIR"/*.sh; do
         [ -f "$_file" ] && source "$_file"
     done
-    unset _file
+    
 }
 
 register_action() {

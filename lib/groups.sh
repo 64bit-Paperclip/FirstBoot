@@ -8,7 +8,7 @@
 # =============================================================================
 
 source_groups() {
-    section "Sourcing Service Groups"
+    
     local _dir
     for _dir in "$SERVICE_GROUPS_DIR"/*/; do
         local _name
@@ -19,7 +19,7 @@ source_groups() {
             warn "source_groups: no entry script found for group '$_name' — expected $_dir${_name}.sh"
         fi
     done
-    unset _dir _name
+    
 }
 
 register_group() {
