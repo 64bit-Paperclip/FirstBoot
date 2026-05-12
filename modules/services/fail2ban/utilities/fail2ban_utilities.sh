@@ -79,34 +79,45 @@ _fail2ban_get_jail_file() {
 # Usage: _fail2ban_select_jail <nameref_array> <prompt>
 # Sets _FAIL2BAN_SELECTED_JAIL to the chosen jail name
 _fail2ban_select_jail() {
-    local -n _F2B_U_JAILS="$1"
-    local _F2B_U_PROMPT="${2:-Select jail}"
+    local -n _f2b_u_jails="$1"
+    local _f2b_u_prompt="${2:-Select jail}"
 
-    if [ ${#_F2B_U_JAILS[@]} -eq 0 ]; then
+    if [ ${#_f2b_u_jails[@]} -eq 0 ]; then
         warn "No jails available."
         return 1
     fi
 
     echo ""
-    local _F2B_U_IDX=1
-    for _F2B_U_JAIL in "${_F2B_U_JAILS[@]}"; do
-        printf "    %d)  %s\n" "$_F2B_U_IDX" "$_F2B_U_JAIL"
-        (( _F2B_U_IDX++ ))
+    local _f2b_u_count=${#_f2b_u_jails[@]}
+    local _f2b_u_rows=$(( (_f2b_u_count + 2) / 3 ))
+    local _f2b_u_col _f2b_u_row _f2b_u_idx _f2b_u_entry
+
+    for (( _f2b_u_row=0; _f2b_u_row<_f2b_u_rows; _f2b_u_row++ )); do
+        printf " "
+        for (( _f2b_u_col=0; _f2b_u_col<3; _f2b_u_col++ )); do
+            _f2b_u_idx=$(( _f2b_u_row + _f2b_u_col * _f2b_u_rows ))
+            if [ $_f2b_u_idx -lt $_f2b_u_count ]; then
+                _f2b_u_entry=$(printf "%d) %s" $(( _f2b_u_idx + 1 )) "${_f2b_u_jails[$_f2b_u_idx]}")
+                printf "%-21.21s  " "$_f2b_u_entry"
+            fi
+        done
+        echo ""
     done
+
     echo ""
 
-    local _F2B_U_CHOICE
+    local _f2b_u_choice
     while true; do
-        read -rp "  ${_F2B_U_PROMPT}: " _F2B_U_CHOICE
-        if [[ "$_F2B_U_CHOICE" =~ ^[0-9]+$ ]] && \
-           [ "$_F2B_U_CHOICE" -ge 1 ] && \
-           [ "$_F2B_U_CHOICE" -le "${#_F2B_U_JAILS[@]}" ]; then
+        read -rp "  ${_f2b_u_prompt}: " _f2b_u_choice
+        if [[ "$_f2b_u_choice" =~ ^[0-9]+$ ]] && \
+           [ "$_f2b_u_choice" -ge 1 ] && \
+           [ "$_f2b_u_choice" -le "$_f2b_u_count" ]; then
             break
         fi
         warn "Invalid selection."
     done
 
-    _FAIL2BAN_SELECTED_JAIL="${_F2B_U_JAILS[$(( _F2B_U_CHOICE - 1 ))]}"
+    _FAIL2BAN_SELECTED_JAIL="${_f2b_u_jails[$(( _f2b_u_choice - 1 ))]}"
 }
 
 # --- Active jail queries -----------------------------------------------------
