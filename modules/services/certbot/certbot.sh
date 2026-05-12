@@ -22,8 +22,7 @@ CERTBOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 CERTBOT_ACTIONS_DIR="$CERTBOT_DIR/actions"
 CERTBOT_UTILS_DIR="$CERTBOT_DIR/utilities"
 
-# --- Include Utilities -------------------------------------------------------
-source "$NGINX_UTILS_DIR/nginx_blocks.sh"
+
 
 # --- Global Utility Functions ------------------------------------------------
 is_certbot_installed(){
