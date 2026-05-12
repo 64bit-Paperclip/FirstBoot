@@ -165,7 +165,7 @@ dynamic_command_menu() {
             _real_idx="${_index_map[$_map_idx]}"
         else
             for _mapped in "${_index_map[@]}"; do
-                IFS='|' read -r _lbl _fn <<< "${_options[$_mapped]}"
+                IFS='|' read -r _lbl _fn <<< "${_dynamic_options[$_mapped]}"
                 if [[ "${_lbl,,}" == "${CMD_CHOICE,,}" ]]; then
                     _real_idx="$_mapped"
                     break
@@ -178,7 +178,7 @@ dynamic_command_menu() {
             fi
         fi
 
-        IFS='|' read -r label fn <<< "${_options[$_real_idx]}"
+        IFS='|' read -r label fn <<< "${_dynamic_options[$_real_idx]}"
         if declare -f "$fn" > /dev/null 2>&1; then
             section_end "$_title"
             "$fn"
