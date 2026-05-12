@@ -7,7 +7,7 @@
 # =============================================================================
 
 # --- Action ------------------------------------------------------------------
-action_fail2ban_create_jail_builtin() {
+action_fail2ban_create_jail_filter() {
     section "Create Jail from Built-in Filter"
 
     if ! is_fail2ban_installed; then
@@ -84,4 +84,4 @@ findtime = ${_f2b_cjb_findtime}"
 }
 
 # --- Register ----------------------------------------------------------------
-register_action "Create Jail from Built-in Filter|fail2ban_create_jail_builtin|action_fail2ban_create_jail_builtin"
+register_action "Create Jail from Built-in Filter|fail2ban_create_jail_builtin|action_fail2ban_create_jail_filter"
