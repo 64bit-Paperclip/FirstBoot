@@ -70,17 +70,13 @@ show_status
 
 MAIN_MENU_OPTIONS=(
     "System Status|show_status"
-	"---|"
 	"Harden System|show_status"
-	"---|"
     "Manage Runtimes|show_status"
     "Manage Service Group|groups_menu"
 	"Manage Service|services_menu"
 	"Manage Users|show_status"
-	"---|"
 	"Run Individual Action|draw_actions_menu"
-	"---|"
-	"FirstBoot Logs|show_status"
+	"View Logs|show_status"
 )
 command_menu MAIN_MENU_OPTIONS "Main Menu"
 
