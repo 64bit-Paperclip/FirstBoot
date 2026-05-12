@@ -43,3 +43,7 @@ is_firstboot_installed() {
 is_firstboot_portable() {
     ! is_firstboot_installed
 }
+
+has_sudo_users() {
+    getent group sudo | cut -d: -f4 | tr ',' '\n' | grep -q .
+}

@@ -71,6 +71,9 @@ show_status() {
         done
         echo ""
     done
+
+    read -rp "     [ Press any key to continue ]" -n1
+    echo -e "\r\033[2K"
 	section_end "System Status"
 }
 
