@@ -147,23 +147,38 @@ dynamic_command_menu() {
         echo ""
         read -rp "  Selection: " CMD_CHOICE
 
-        if [ "$CMD_CHOICE" = "0" ]; then
+        # -- Go Back --
+        if [ "$CMD_CHOICE" = "0" ] || [[ "${CMD_CHOICE,,}" == "back" ]]; then
             section_end "$_title"
             break
         fi
-        if ! [[ "$CMD_CHOICE" =~ ^[0-9]+$ ]]; then
-            warn "Invalid selection."
-            section_end "$_title"
-            continue
+
+        local _real_idx=""
+
+        if [[ "$CMD_CHOICE" =~ ^[0-9]+$ ]]; then
+            local _map_idx=$(( CMD_CHOICE - 1 ))
+            if [ "$_map_idx" -lt 0 ] || [ "$_map_idx" -ge "${#_index_map[@]}" ]; then
+                warn "Invalid selection."
+                section_end "$_title"
+                continue
+            fi
+            _real_idx="${_index_map[$_map_idx]}"
+        else
+            for _mapped in "${_index_map[@]}"; do
+                IFS='|' read -r _lbl _fn <<< "${_options[$_mapped]}"
+                if [[ "${_lbl,,}" == "${CMD_CHOICE,,}" ]]; then
+                    _real_idx="$_mapped"
+                    break
+                fi
+            done
+            if [ -z "$_real_idx" ]; then
+                warn "Invalid selection."
+                section_end "$_title"
+                continue
+            fi
         fi
-        local _map_idx=$(( CMD_CHOICE - 1 ))
-        if [ "$_map_idx" -lt 0 ] || [ "$_map_idx" -ge "${#_index_map[@]}" ]; then
-            warn "Invalid selection."
-            section_end "$_title"
-            continue
-        fi
-        local _real_idx="${_index_map[$_map_idx]}"
-        IFS='|' read -r label fn <<< "${_dynamic_options[$_real_idx]}"
+
+        IFS='|' read -r label fn <<< "${_options[$_real_idx]}"
         if declare -f "$fn" > /dev/null 2>&1; then
             section_end "$_title"
             "$fn"
@@ -203,22 +218,38 @@ command_menu() {
         echo "    0)  Back"
         echo ""
         read -rp "  Selection: " CMD_CHOICE
-        if [ "$CMD_CHOICE" = "0" ]; then
+        
+        # -- Go Back --
+        if [ "$CMD_CHOICE" = "0" ] || [[ "${CMD_CHOICE,,}" == "back" ]]; then
             section_end "$_title"
             break
         fi
-        if ! [[ "$CMD_CHOICE" =~ ^[0-9]+$ ]]; then
-            warn "Invalid selection."
-            section_end "$_title"
-            continue
+
+        local _real_idx=""
+
+        if [[ "$CMD_CHOICE" =~ ^[0-9]+$ ]]; then
+            local _map_idx=$(( CMD_CHOICE - 1 ))
+            if [ "$_map_idx" -lt 0 ] || [ "$_map_idx" -ge "${#_index_map[@]}" ]; then
+                warn "Invalid selection."
+                section_end "$_title"
+                continue
+            fi
+            _real_idx="${_index_map[$_map_idx]}"
+        else
+            for _mapped in "${_index_map[@]}"; do
+                IFS='|' read -r _lbl _fn <<< "${_options[$_mapped]}"
+                if [[ "${_lbl,,}" == "${CMD_CHOICE,,}" ]]; then
+                    _real_idx="$_mapped"
+                    break
+                fi
+            done
+            if [ -z "$_real_idx" ]; then
+                warn "Invalid selection."
+                section_end "$_title"
+                continue
+            fi
         fi
-        local _map_idx=$(( CMD_CHOICE - 1 ))
-        if [ "$_map_idx" -lt 0 ] || [ "$_map_idx" -ge "${#_index_map[@]}" ]; then
-            warn "Invalid selection."
-            section_end "$_title"
-            continue
-        fi
-        local _real_idx="${_index_map[$_map_idx]}"
+
         IFS='|' read -r label fn <<< "${_options[$_real_idx]}"
         if declare -f "$fn" > /dev/null 2>&1; then
             section_end "$_title"
