@@ -35,34 +35,47 @@ is_mysql_running(){
     svc_running "$MYSQL_SERVICE"
 }
 
-MYSQL_MENU_OPTIONS=(
-	"Install MySql|action_mysql_install"
-	"Uninstall MySql|action_mysql_uninstall"
-    "---|"
-    "Start|action_mysql_start"
-    "Stop|action_mysql_stop"
-    "Restart|action_mysql_restart"
-    "Enable on Boot|action_mysql_enable_on_boot"
-    "Disable on Boot|action_mysql_disable_on_boot"
-	"---|"
-    "Backup Database|action_mysql_backup_database"
-    "Create Database|action_mysql_create_database"
-    "Delete Database|action_mysql_create_database"
-    "Duplicate Database|action_mysql_duplicate_database"
-    "Rename Database|action_mysql_rename_database"
-	"List Databases|action_mysql_list_databases"
-    "---|"
-    "Create User|action_mysql_create_user"
-    "Delete User|action_mysql_delete_user"
-    "List Users|action_mysql_list_users"
-    "---|"
-    "Run Script|action_mysql_run_script"
-    
-)
+# --- Dynamic menu ------------------------------------------------------------
+_mysql_generate_menu_options() {
+    local -n _out="$1"
+    _out=()
 
+    if is_mysql_installed; then
+        _out+=("Uninstall MySQL|action_mysql_uninstall")
+    else
+        _out+=("Install MySQL|action_mysql_install")
+        return 0
+    fi
+
+    _out+=("---|Manage Service")
+
+    if is_mysql_running; then
+        _out+=("Stop|action_mysql_stop")
+        _out+=("Restart|action_mysql_restart")
+    else
+        _out+=("Start|action_mysql_start")
+    fi
+
+    _out+=("Enable on Boot|action_mysql_enable_on_boot")
+    _out+=("Disable on Boot|action_mysql_disable_on_boot")
+    _out+=("---|Manage Databases")
+    _out+=("Backup Database|action_mysql_backup_database")
+    _out+=("Create Database|action_mysql_create_database")
+    _out+=("Delete Database|action_mysql_delete_database")
+    _out+=("Duplicate Database|action_mysql_duplicate_database")
+    _out+=("List Databases|action_mysql_list_databases")
+    _out+=("Rename Database|action_mysql_rename_database")
+    _out+=("---|Manage Users")
+    _out+=("Create User|action_mysql_create_user")
+    _out+=("Delete User|action_mysql_delete_user")
+    _out+=("List Users|action_mysql_list_users")
+    _out+=("---|")
+    _out+=("Run Script|action_mysql_run_script")
+}
+
+# --- Entry function ----------------------------------------------------------
 mysql_entry() {
-	command_menu MYSQL_MENU_OPTIONS "MySQL"
-    
+    dynamic_command_menu _mysql_generate_menu_options "MySQL"
 }
 
 # --- Register ----------------------------------------------------------------
