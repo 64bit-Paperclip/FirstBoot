@@ -16,10 +16,10 @@ action_mysql_install() {
     section "Installing MySQL"
 
     info "Updating package list..."
-    apt update -qq || { error "Failed to update package list."; return 1; }
+    run_system_cmd apt update -qq || { error "Failed to update package list."; return 1; }
 
     info "Installing MySQL..."
-    apt install -y mysql-server || { error "Failed to install MySQL."; return 1; }
+    run_system_cmd apt install -y mysql-server || { error "Failed to install MySQL."; return 1; }
 
     info "Securing MySQL installation..."
     mysql -u root <<EOF || { error "Failed to secure MySQL."; return 1; }

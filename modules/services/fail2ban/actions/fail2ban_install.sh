@@ -17,10 +17,10 @@ action_fail2ban_install() {
     section "Installing Fail2ban"
 
     info "Updating package list..."
-    apt update -qq || { error "Failed to update package list."; return 1; }
+    run_system_cmd apt update -qq || { error "Failed to update package list."; return 1; }
 
     info "Installing Fail2ban..."
-    apt install -y fail2ban || { error "Failed to install Fail2ban."; return 1; }
+    run_system_cmd apt install -y fail2ban || { error "Failed to install Fail2ban."; return 1; }
 
     section "Fail2ban Configuration"
 

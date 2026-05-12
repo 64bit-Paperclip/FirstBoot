@@ -19,15 +19,16 @@ action_mysql_uninstall() {
     confirm "Are you absolutely sure? This cannot be undone." || return 1
 
     info "Stopping MySQL..."
-    systemctl stop mysql
-    systemctl disable mysql
+
+    run_system_cmd systemctl stop mysql || { error "Failed to stop MySQL."; return 1; }
+    run_system_cmd systemctl disable mysql || { error "Failed to disable MySQL."; return 1; }
 
     info "Removing MySQL packages..."
-    apt purge -y mysql-server mysql-client mysql-common
-    apt autoremove -y
+    run_system_cmd apt purge -y mysql-server mysql-client mysql-common || { error "Failed to purge MySQL packages."; return 1; }
+    run_system_cmd apt autoremove -y || { error "Failed to autoremove packages."; return 1; }
 
     info "Removing MySQL data and config..."
-    rm -rf /etc/mysql /var/lib/mysql /var/log/mysql
+    run_system_cmd rm -rf /etc/mysql /var/lib/mysql /var/log/mysql || { error "Failed to remove MySQL data."; return 1; }
 
     info "MySQL uninstalled."
 }

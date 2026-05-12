@@ -47,3 +47,21 @@ is_firstboot_portable() {
 has_sudo_users() {
     getent group sudo | cut -d: -f4 | tr ',' '\n' | grep -q .
 }
+
+run_system_cmd() {
+    local output
+    local cmd="$@"
+    
+    output=$(eval "$cmd" 2>&1)
+    local exit_code=$?
+    
+    if [ $exit_code -ne 0 ]; then
+        echo "[!] Command failed: $cmd"
+        read -p "    Would you like to see the output? [y/N]: " show
+        if [[ "$show" =~ ^[Yy]$ ]]; then
+            echo "$output"
+        fi
+    fi
+    
+    return $exit_code
+}

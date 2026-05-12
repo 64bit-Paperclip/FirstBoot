@@ -38,12 +38,26 @@ is_mysql_running(){
 MYSQL_MENU_OPTIONS=(
 	"Install MySql|action_mysql_install"
 	"Uninstall MySql|action_uninstall_mysql"
+    "---|"
+    "Start|action_mysql_start"
+    "Stop|action_mysql_stop"
+    "Restart|action_mysql_restart"
+    "Enable on Boot|action_mysql_enable_on_boot"
+    "Disable on Boot|action_mysql_disable_on_boot"
 	"---|"
+    "Backup Database|action_mysql_backup_database"
     "Create Database|action_mysql_create_database"
+    "Delete Database|action_mysql_create_database"
+    "Duplicate Database|action_mysql_duplicate_database"
+    "Rename Database|action_mysql_rename_database"
 	"List Databases|action_mysql_list_databases"
     "---|"
-    "List Users|action_mysql_list_users"
     "Create User|action_mysql_create_user"
+    "Delete User|action_mysql_delete_user"
+    "List Users|action_mysql_list_users"
+    "---|"
+    "Run Script|action_mysql_run_script"
+    
 )
 
 mysql_entry() {
