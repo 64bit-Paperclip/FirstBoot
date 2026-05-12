@@ -45,9 +45,9 @@ _fail2ban_generate_menu_options() {
     _out+=("---|")
 
     if is_fail2ban_running; then
-        _out+=("Stop|action_fail2ban_stop")
-        _out+=("Restart|action_fail2ban_restart")
         _out+=("Reload|action_fail2ban_reload")
+        _out+=("Restart|action_fail2ban_restart")
+        _out+=("Stop|action_fail2ban_stop")
     else
         _out+=("Start|action_fail2ban_start")
     fi
@@ -56,12 +56,15 @@ _fail2ban_generate_menu_options() {
     _out+=("Enable on Boot|action_fail2ban_enable")
     _out+=("Disable on Boot|action_fail2ban_disable")
     _out+=("---|")
-    _out+=("List Jails|action_fail2ban_list_jails")
-    _out+=("Enable Jail|action_fail2ban_enable_jail")
+    _out+=("Create Custom Jail|action_fail2ban_create_jail_custom")
+    _out+=("Create Jail from Filter|action_fail2ban_create_jail_filter")
+    _out+=("Delete Jail|action_fail2ban_delete_jail")
     _out+=("Disable Jail|action_fail2ban_disable_jail")
+    _out+=("Enable Jail|action_fail2ban_enable_jail")
+    _out+=("List Jails|action_fail2ban_list_jails")
     _out+=("---|")
-    _out+=("List Banned IPs|action_fail2ban_list_banned")
     _out+=("Ban IP|action_fail2ban_ban_ip")
+    _out+=("List Banned IPs|action_fail2ban_list_banned")
     _out+=("Unban IP|action_fail2ban_unban_ip")
     _out+=("Unban All|action_fail2ban_unban_all")
     _out+=("---|")

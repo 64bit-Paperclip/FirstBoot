@@ -36,15 +36,20 @@ action_fail2ban_install() {
     read -rp "  Max attempts before ban [5]: " _F2B_MAXRETRY
     _F2B_MAXRETRY="${_F2B_MAXRETRY:-5}"
 
-    # Write settings to jail.local
-    info "Writing configuration..."
+# Write default settings to jail.local
+    info "Writing default configuration..."
     cat > /etc/fail2ban/jail.local <<EOF
 [DEFAULT]
 bantime  = ${_F2B_BANTIME}
 findtime = ${_F2B_FINDTIME}
 maxretry = ${_F2B_MAXRETRY}
 backend  = systemd
+EOF
 
+    # Write sshd jail to jail.d
+    info "Configuring SSH jail..."
+    mkdir -p /etc/fail2ban/jail.d
+    cat > /etc/fail2ban/jail.d/sshd.conf <<EOF
 [sshd]
 enabled  = true
 port     = ssh

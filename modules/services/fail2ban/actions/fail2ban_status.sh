@@ -30,16 +30,17 @@ action_fail2ban_status() {
         echo -e "  ${BOLD}Boot start:${NC}   ${YELLOW}disabled${NC}"
     fi
 
-    # Global configuration
+    # Default configuration
     echo ""
-    echo -e "  ${BOLD}Configuration:${NC}"
-    local _bantime  _findtime _maxretry
-    _bantime=$(fail2ban-client get sshd bantime 2>/dev/null || grep -E "^bantime" /etc/fail2ban/jail.local 2>/dev/null | awk '{print $3}')
-    _findtime=$(fail2ban-client get sshd findtime 2>/dev/null || grep -E "^findtime" /etc/fail2ban/jail.local 2>/dev/null | awk '{print $3}')
-    _maxretry=$(fail2ban-client get sshd maxretry 2>/dev/null || grep -E "^maxretry" /etc/fail2ban/jail.local 2>/dev/null | awk '{print $3}')
-    echo "    Ban time:     ${_bantime:-unknown}"
-    echo "    Find time:    ${_findtime:-unknown}"
-    echo "    Max retries:  ${_maxretry:-unknown}"
+    echo -e "  ${BOLD}Default Configuration:${NC}"
+    echo ""
+    local _default_bantime _default_findtime _default_maxretry
+    _default_bantime=$(fail2ban-client get sshd bantime 2>/dev/null || grep -A5 "^\[DEFAULT\]" /etc/fail2ban/jail.local 2>/dev/null | grep "^bantime" | awk '{print $3}')
+    _default_findtime=$(fail2ban-client get sshd findtime 2>/dev/null || grep -A5 "^\[DEFAULT\]" /etc/fail2ban/jail.local 2>/dev/null | grep "^findtime" | awk '{print $3}')
+    _default_maxretry=$(fail2ban-client get sshd maxretry 2>/dev/null || grep -A5 "^\[DEFAULT\]" /etc/fail2ban/jail.local 2>/dev/null | grep "^maxretry" | awk '{print $3}')
+    echo "    Ban time:     ${_default_bantime:-unknown}"
+    echo "    Find time:    ${_default_findtime:-unknown}"
+    echo "    Max retries:  ${_default_maxretry:-unknown}"
 
     # Jail summary
     echo ""
@@ -65,19 +66,6 @@ action_fail2ban_status() {
             printf "    %-10s %s\n" "${_banned:-0}" "${_failed:-0}"
         done
     fi
-
-    # Available filters
-    echo ""
-    echo -e "  ${BOLD}Available Filters:${NC}"
-    echo ""
-    local _filters
-    _filters=$(ls /etc/fail2ban/filter.d/*.conf 2>/dev/null | xargs -n1 basename | sed 's/\.conf$//' | sort | tr '\n' ' ')
-    if [ -z "$_filters" ]; then
-        echo "    No filters found."
-    else
-        echo "$_filters" | fold -s -w 70 | sed 's/^/    /'
-    fi
-    echo ""
 
     # Recently banned IPs
     echo ""
