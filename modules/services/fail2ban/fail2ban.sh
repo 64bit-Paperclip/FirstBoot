@@ -30,9 +30,47 @@ is_fail2ban_running() {
     svc_running "$FAIL2BAN_SERVICE"
 }
 
+# --- Dynamic menu ------------------------------------------------------------
+_fail2ban_generate_menu_options() {
+    local -n _out="$1"
+    _out=()
+
+    if is_fail2ban_installed; then
+        _out+=("Uninstall Fail2ban|action_fail2ban_uninstall")
+    else
+        _out+=("Install Fail2ban|action_fail2ban_install")
+        return 0
+    fi
+
+    _out+=("---|")
+
+    if is_fail2ban_running; then
+        _out+=("Stop|action_fail2ban_stop")
+        _out+=("Restart|action_fail2ban_restart")
+        _out+=("Reload|action_fail2ban_reload")
+    else
+        _out+=("Start|action_fail2ban_start")
+    fi
+
+    _out+=("Status|action_fail2ban_status")
+    _out+=("Enable on Boot|action_fail2ban_enable")
+    _out+=("Disable on Boot|action_fail2ban_disable")
+    _out+=("---|")
+    _out+=("List Jails|action_fail2ban_list_jails")
+    _out+=("Enable Jail|action_fail2ban_enable_jail")
+    _out+=("Disable Jail|action_fail2ban_disable_jail")
+    _out+=("---|")
+    _out+=("List Banned IPs|action_fail2ban_list_banned")
+    _out+=("Ban IP|action_fail2ban_ban_ip")
+    _out+=("Unban IP|action_fail2ban_unban_ip")
+    _out+=("Unban All|action_fail2ban_unban_all")
+    _out+=("---|")
+    _out+=("Configure|action_fail2ban_configure")
+}
+
 # --- Entry function ----------------------------------------------------------
 fail2ban_entry() {
-    echo "Fail2ban control not yet complete"
+    dynamic_command_menu _fail2ban_generate_menu_options "Fail2ban"
 }
 
 # --- Register ----------------------------------------------------------------
