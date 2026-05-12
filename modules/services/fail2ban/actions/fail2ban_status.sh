@@ -8,6 +8,7 @@
 
 # --- Action ------------------------------------------------------------------
 action_fail2ban_status() {
+
     section "Fail2ban Status"
 
     # State
@@ -65,6 +66,19 @@ action_fail2ban_status() {
         done
     fi
 
+    # Available filters
+    echo ""
+    echo -e "  ${BOLD}Available Filters:${NC}"
+    echo ""
+    local _filters
+    _filters=$(ls /etc/fail2ban/filter.d/*.conf 2>/dev/null | xargs -n1 basename | sed 's/\.conf$//' | sort | tr '\n' ' ')
+    if [ -z "$_filters" ]; then
+        echo "    No filters found."
+    else
+        echo "$_filters" | fold -s -w 70 | sed 's/^/    /'
+    fi
+    echo ""
+
     # Recently banned IPs
     echo ""
     echo -e "  ${BOLD}Currently Banned IPs:${NC}"
@@ -86,7 +100,7 @@ action_fail2ban_status() {
         echo "    No IPs currently banned."
     fi
 
-    echo ""
+    section_end "Fail2ban Status"
 
     unset _bantime _findtime _maxretry _jails _status _banned _failed _banned_ips _any_banned _jail_status
 }
