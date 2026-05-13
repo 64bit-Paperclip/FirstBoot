@@ -37,6 +37,7 @@ action_mysql_list_databases() {
         printf "    %-30s %s MB\n" "$db" "${size:-0}"
     done
     section_end "MySql Databases"
+    echo ""
     wait_for_any_key
 }
 

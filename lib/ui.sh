@@ -98,7 +98,8 @@ confirm_prompt() {
     local prompt="${1:-Are you sure?}"
     local answer
     while true; do
-        read -rp "  $prompt (yes/no): " answer
+        echo -en "  $prompt (yes/no): "
+        read -r answer
         case "$answer" in
             yes|y) return 0 ;;
             no|n)  return 1 ;;

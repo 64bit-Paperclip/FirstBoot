@@ -15,8 +15,8 @@ action_mysql_uninstall() {
         return 1
     fi
 
-    confirm_prompt "This will remove MySQL and ALL its data. Are you sure?" || return 1
-    confirm_prompt "Are you absolutely sure? This cannot be undone." || return 1
+    confirm_prompt "${BOLD_RED}This will remove MySQL and ALL its data. Are you sure?${NC}" || return 1
+    confirm_prompt "${BLINK}${BOLD_RED}Are you absolutely sure?${NC} This cannot be undone." || return 1
 
     info "Stopping MySQL..."
 
