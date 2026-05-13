@@ -101,7 +101,3 @@ groups_menu() {
     done
     unset GROUPS_CHOICE
 }
-
-
-
-export -f source_groups register_service

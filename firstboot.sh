@@ -30,16 +30,11 @@ SERVICE_GROUPS_DIR="$MODULE_DIR/groups"
 SERVICES_DIR="$MODULE_DIR/services"
 ACTIONS_DIR="$MODULE_DIR/actions"
 
-# --- Resolve directories that depend on run mode ------------------------------
-if [[ "$FIRSTBOOT_RUN_DIR" != "/opt/firstboot" ]]; then
-    LOG_DIR="$FIRSTBOOT_RUN_DIR/logs"
-    FIRSTBOOT_USER_DIR="$FIRSTBOOT_RUN_DIR/user"
-fi
-
 # --- Verify directory structure ----------------------------------------------
 [ ! -d "$LIB_DIR" ]              && echo "[x] Cannot find lib/ directory. Expected at: $LIB_DIR" && exit 1
 [ ! -f "$LIB_DIR/globals.sh" ]   && echo "[x] Cannot find lib/globals.sh. Expected at: $LIB_DIR/globals.sh" && exit 1
 [ ! -f "$LIB_DIR/common.sh" ]    && echo "[x] Cannot find lib/common.sh. Expected at: $LIB_DIR/common.sh" && exit 1
+[ ! -f "$LIB_DIR/logging.sh" ]   && echo "[x] Cannot find lib/logging.sh. Expected at: $LIB_DIR/logging.sh" && exit 1
 [ ! -f "$LIB_DIR/ui.sh" ]        && echo "[x] Cannot find lib/ui.sh. Expected at: $LIB_DIR/ui.sh" && exit 1
 [ ! -f "$LIB_DIR/groups.sh" ]    && echo "[x] Cannot find lib/groups.sh. Expected at: $LIB_DIR/groups.sh" && exit 1
 [ ! -f "$LIB_DIR/services.sh" ]  && echo "[x] Cannot find lib/services.sh. Expected at: $LIB_DIR/services.sh" && exit 1
@@ -53,18 +48,31 @@ fi
 # --- Load required common libs -----------------------------------------------
 source "$LIB_DIR/globals.sh"
 source "$LIB_DIR/common.sh"
+source "$LIB_DIR/logging.sh"
 source "$LIB_DIR/ui.sh"
 
 # --- Root User Check / Warning -----------------------------------------------
-if [ "$UID" -eq 0 ]; then
-    echo "-------------------------------------------------------------------------------"
+if is_user_root; then
+    echo ""
     warn "You are currently logged in and running FirstBoot as root."
     echo "-------------------------------------------------------------------------------"
     confirm_prompt "Are you sure you wish to contnue?" || { exit 1;}
+    echo ""
 fi
+
+# --- Resolve directories that depend on run mode ------------------------------
+if is_firstboot_running_portable; then
+    LOG_DIR="$FIRSTBOOT_RUN_DIR/logs"
+    FIRSTBOOT_USER_DIR="$FIRSTBOOT_RUN_DIR/user"
+fi
+
+# --- Ensure required directories exist ---------------------------------------
+mkdir -p "$LOG_DIR" || { echo "[x] Cannot create log directory: $LOG_DIR"; exit 1; }
+mkdir -p "$FIRSTBOOT_USER_DIR" || { echo "[x] Cannot create user directory: $FIRSTBOOT_USER_DIR"; exit 1; }
 
 # --- Portable Check / Warning -----------------------------------------------
 if is_firstboot_running_portable; then
+    echo ""
     warn "You are running FirstBoot in portable mode. Some Features may not be available."
     echo "-------------------------------------------------------------------------------"
     echo "  Log files will be placed in:"
@@ -72,22 +80,11 @@ if is_firstboot_running_portable; then
     echo "  User defined modules, scripts, and data are loaded from:"
     echo "      $FIRSTBOOT_USER_DIR"
     echo "-------------------------------------------------------------------------------"
-    wait_for_any_key
+    confirm_prompt "Are you sure you wish to contnue?" || { exit 1;}
+    echo ""
 fi
 
-# --- Logging setup -----------------------------------------------------------
-mkdir -p "$LOG_DIR"
-# Tee all output to log file while still showing on terminal
-exec > >(tee -a "$LOG_FILE") 2>&1
-
-info "Logging to: $LOG_FILE"
-
-
-# --- Ensure required directories exist ---------------------------------------
-mkdir -p "$LOG_DIR" || { echo "[x] Cannot create log directory: $LOG_DIR"; exit 1; }
-mkdir -p "$FIRSTBOOT_USER_DIR" || { echo "[x] Cannot create user directory: $FIRSTBOOT_USER_DIR"; exit 1; }
-
-# --- Load Module -------------------------------------------------------------
+# --- Load Modules ------------------------------------------------------------
 source "$LIB_DIR/groups.sh"
 source "$LIB_DIR/services.sh"
 source "$LIB_DIR/actions.sh"
@@ -100,6 +97,7 @@ source_actions
 
 # --- Banner ------------------------------------------------------------------
 draw_banner
+log "info" "FirstBoot Started"
 
 # --- Status ------------------------------------------------------------------
 show_status
@@ -135,7 +133,7 @@ while true; do
     warn "Domain name cannot be empty."
 done
 
-export SERVER_NAME
+
 
 # --- Admin user --------------------------------------------------------------
 section "Admin User"

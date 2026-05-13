@@ -8,22 +8,8 @@
 # GitHub:  https://github.com/64bit-Paperclip/FirstBoot
 # =============================================================================
 
-# --- Logging functions -------------------------------------------------------
-
-# info — general status message
-info() {
-    echo -e "${GREEN}[+]${NC} $1"
-}
-
-# warn — non-fatal warning
-warn() {
-    echo -e "${YELLOW}[!]${NC} $1"
-}
-
-# error — fatal error, exits immediately
-error() {
-    echo -e "${RED}[✗]${NC} $1"
-    exit 1
+strip_escape_codes() {
+    echo -e "$1" | sed 's/\x1B\[[0-9;]*[mGKHF]//g'
 }
 
 # Check if current user is logged in directly as root
@@ -65,3 +51,4 @@ run_system_cmd() {
     
     return $exit_code
 }
+

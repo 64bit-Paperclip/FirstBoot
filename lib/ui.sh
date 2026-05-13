@@ -32,17 +32,6 @@ section() {
     echo ""
 }
 
-
-
-section_break() {
-
-	[ "${NO_SECTION_UI:-false}" = "true" ] && return 0
-
-	echo ""
-	echo -e "${CYAN}═══════════════════════════════════════════════════════════════════════════════${NC}"
-	echo ""
-}
-
 section_end() {
 
 	[ "${NO_SECTION_UI:-false}" = "true" ] && return 0
@@ -79,11 +68,11 @@ draw_banner() {
 	echo ""
 	echo -e "${CYAN}"
 	echo -e "╔══════════════════════════════════════════════════════════════════════════════╗"
-	echo -e "║ ${NC}FIRSTBOOT v1.0${CYAN}                                   ${NC}Server Management Toolkit${CYAN} ║"
+	echo -e "║ ${NC}FIRSTBOOT v1.0${CYAN}                                     ${NC}Server Management Toolkit${CYAN} ║"
 	echo -e "╠══════════════════════════════════════════════════════════════════════════════╣"
 	echo -e "║                                                                              ║"
-	echo -e "╚══════════════════════════════════════════════════════════════════════════════╝"
-	echo -e "${NC}"
+	echo -e "╚══════════════════════════════════════════════════════════════════════════════╝${NC}"
+
 }
 
 
@@ -135,7 +124,7 @@ dynamic_command_menu() {
             IFS='|' read -r label fn <<< "$entry"
             if [ "$label" = "---" ]; then
                 if [ -n "$fn" ]; then
-                    echo -e " ${CYAN}-[ ${BOLD}$fn ${CYAN}]-${NC}"
+                    echo -e "   ${CYAN}[ ${BOLD}$fn ${NC}${CYAN}]${NC}"
                 else
                     echo ""
                 fi
@@ -206,7 +195,7 @@ command_menu() {
             IFS='|' read -r label fn <<< "$entry"
             if [ "$label" = "---" ]; then
                 if [ -n "$fn" ]; then
-                    echo -e " ${CYAN}-[ ${NC}${BOLD}$fn ${NC}${CYAN}]-${NC}"
+                    echo -e "   ${CYAN}[ ${BOLD}$fn ${NC}${CYAN}]${NC}"
                 else
                     echo ""
                 fi

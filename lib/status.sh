@@ -74,7 +74,6 @@ show_status() {
 
     
 	section_end "System Status"
-    echo ""
     wait_for_any_key
 }
 
