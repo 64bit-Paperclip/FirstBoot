@@ -69,7 +69,7 @@ findtime = ${_f2b_cjb_findtime}"
     echo "$_f2b_cjb_content" | sed 's/^/    /'
     echo ""
 
-    confirm "Write this jail configuration?" || return 1
+    confirm_prompt "Write this jail configuration?" || return 1
 
     local _f2b_cjb_jail_file
     _f2b_cjb_jail_file=$(_fail2ban_get_jail_file "$_f2b_cjb_selected")

@@ -132,6 +132,7 @@ _draw_menu() {
     echo ""
     echo "    0)  Back"
     echo ""
+    section_end "$_title"
 }
 
 
@@ -163,7 +164,6 @@ dynamic_command_menu() {
         read -rp "  Selection: " CMD_CHOICE
 
         if [ "$CMD_CHOICE" = "0" ] || [[ "${CMD_CHOICE,,}" == "back" ]]; then
-            section_end "$_title"
             break
         fi
 
@@ -173,7 +173,6 @@ dynamic_command_menu() {
             local _map_idx=$(( CMD_CHOICE - 1 ))
             if [ "$_map_idx" -lt 0 ] || [ "$_map_idx" -ge "${#_index_map[@]}" ]; then
                 warn "Invalid selection."
-                section_end "$_title"
                 continue
             fi
             _real_idx="${_index_map[$_map_idx]}"
@@ -187,18 +186,17 @@ dynamic_command_menu() {
             done
             if [ -z "$_real_idx" ]; then
                 warn "Invalid selection."
-                section_end "$_title"
+                
                 continue
             fi
         fi
 
         IFS='|' read -r label fn <<< "${_dynamic_options[$_real_idx]}"
         if declare -f "$fn" > /dev/null 2>&1; then
-            section_end "$_title"
             "$fn"
         else
             warn "Function '$fn' not found."
-            section_end "$_title"
+            
         fi
     done
     unset CMD_CHOICE
