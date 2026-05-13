@@ -19,7 +19,7 @@ log() {
     message=$(strip_escape_codes "$2")
 
     timestamp=$(date '+%Y-%m-%d %H:%M:%S')
-    echo "[$timestamp] [$level] $message" >> "$LOG_FILE"
+    echo "[$timestamp] [$level] $message" >> "$FIRSTBOOT_LOG_FILE"
 }
 
 

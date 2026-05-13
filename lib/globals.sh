@@ -65,9 +65,7 @@ NC='\033[0m'
 
 
 
-# --- Logging -----------------------------------------------------------------
-LOG_DIR="/var/log/firstboot"
-LOG_FILE="$LOG_DIR/firstboot-$(date +%Y%m%d-%H%M%S).log"
+
 
 # --- Session -----------------------------------------------------------------
 CURRENT_IP=""
@@ -143,9 +141,7 @@ detect_session() {
 # EXPORTS
 # =============================================================================
 
-export RED GREEN YELLOW CYAN BOLD NC
 
-export LOG_DIR LOG_FILE
 export FIRSTBOOT_COMPLETE FIRSTBOOT_LAST_RUN
 export CURRENT_IP ADMIN_USER SERVER_NAME SERVER_HOSTNAME
 export SYS_HOSTNAME SYS_OS SYS_OS_VERSION SYS_IPV4 SYS_IPV6
