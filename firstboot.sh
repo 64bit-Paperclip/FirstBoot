@@ -30,7 +30,7 @@ if [ "$FIRSTBOOT_RUN_DIR" = "$FIRSTBOOT_INSTALL_DIR" ]; then
     FIRSTBOOT_USER_DIR="/etc/firstboot"
 else
     FIRSTBOOT_LOG_DIR="$FIRSTBOOT_RUN_DIR/logs/"
-    FIRSTBOOT_USER_DIR="/user"
+    FIRSTBOOT_USER_DIR="$FIRSTBOOT_RUN_DIR/user"
 fi
 
 FIRSTBOOT_LOG_FILE="$FIRSTBOOT_LOG_DIR/firstboot-$(date +%Y%m%d-%H%M%S).log"
