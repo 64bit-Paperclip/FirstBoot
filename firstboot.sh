@@ -14,14 +14,21 @@
 # individually rather than aborting the entire run.
 set -uo pipefail
 
-# --- Must run as root --------------------------------------------------------
+# --- Must run as super user ---------------------------------------------------
 [ "$EUID" -ne 0 ] && echo "[✗] Please run as root: sudo bash firstboot.sh" && exit 1
+
+# --- Root User Check / Warning -----------------------------------------------
+if [ "$UID" -eq 0 ]; then
+    echo "-------------------------------------------------------------------------------"
+    echo "         You are currently logged in and running FirstBoot as root."
+    echo "-------------------------------------------------------------------------------"
+fi
 
 # --- Directory Info -----------------------------------------------------------
 FIRSTBOOT_INSTALL_DIR="/opt/firstboot"
 FIRSTBOOT_USER_DIR="/etc/firstboot"
 
-# --- Resolve script directory ------------------------------------------------
+# --- Resolve default directories ----------------------------------------------
 # Works regardless of where you call the script from
 FIRSTBOOT_RUN_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 LIB_DIR="$FIRSTBOOT_RUN_DIR/lib"
@@ -30,6 +37,12 @@ SERVICE_GROUPS_DIR="$MODULE_DIR/groups"
 SERVICES_DIR="$MODULE_DIR/services"
 ACTIONS_DIR="$MODULE_DIR/actions"
 
+# --- Resolve directories that depend on run mode ------------------------------
+if [[ "$FIRSTBOOT_RUN_DIR" != "/opt/firstboot" ]]; then
+    LOG_DIR="$FIRSTBOOT_RUN_DIR/logs"
+    FIRSTBOOT_USER_DIR="$FIRSTBOOT_RUN_DIR/user"
+
+fi
 
 # --- Verify directory structure ----------------------------------------------
 [ ! -d "$LIB_DIR" ]              && echo "[x] Cannot find lib/ directory. Expected at: $LIB_DIR" && exit 1
@@ -45,26 +58,35 @@ ACTIONS_DIR="$MODULE_DIR/actions"
 [ ! -d "$SERVICES_DIR" ]         && echo "[x] Cannot find modules/services/ directory. Expected at: $SERVICES_DIR" && exit 1
 [ ! -d "$ACTIONS_DIR" ]          && echo "[x] Cannot find modules/actions/ directory. Expected at: $ACTIONS_DIR" && exit 1
 
-# --- Load common libs --------------------------------------------------------
+# --- Ensure required directories exist --------------------------------------
+    mkdir -p "$LOG_DIR" || { echo "[x] Cannot create log directory: $LOG_DIR"; exit 1; }
+    mkdir -p "$FIRSTBOOT_USER_DIR" || { echo "[x] Cannot create user directory: $FIRSTBOOT_USER_DIR"; exit 1; }
+
+# --- Load common libs -------------------------------------------------------
 source "$LIB_DIR/globals.sh"
 source "$LIB_DIR/common.sh"
 source "$LIB_DIR/ui.sh"
+
+# --- Portable Check / Warning -----------------------------------------------
+if is_firstboot_running_portable; then
+    echo "-------------------------------------------------------------------------------"
+    warn "You are running FirstBoot in portable mode. Some Features may not be available."
+    echo "  Log files will be placed in:"
+    echo "      $LOG_DIR"
+    echo "  User defined modules, scripts, and data are loaded from:"
+    echo "      $FIRSTBOOT_USER_DIR"
+    echo "-------------------------------------------------------------------------------"
+    wait_for_any_key
+fi
+
+# --- Load Module -----------------------------------------------------------
 source "$LIB_DIR/groups.sh"
 source "$LIB_DIR/services.sh"
 source "$LIB_DIR/actions.sh"
 source "$LIB_DIR/status.sh"
 
-if is_user_root; then
-    warn "You are currently logged in and running FirstBoot as root."
-fi
 
-if is_firstboot_running_portable; then
-    FIRSTBOOT_USER_DIR="$FIRSTBOOT_RUN_DIR/user"
-    warn "You are running FirstBoot in portable mode. Some Features may not be available."
-    warn "Custom user scripts and data are loaded from:"
-    warn "   $FIRSTBOOT_USER_DIR"
-    wait_for_any_key
-fi
+
 
 # --- Logging setup -----------------------------------------------------------
 mkdir -p "$LOG_DIR"
