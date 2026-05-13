@@ -37,8 +37,6 @@ action_mysql_list_users() {
         printf "    %-20s %-30s %s\n" "$user" "$host" "$plugin"
     done
     section_end "MySQL Users"
-    
-    echo ""
     wait_for_any_key
 }
 

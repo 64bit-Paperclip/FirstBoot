@@ -21,8 +21,10 @@ SVC_MYSQL="not installed"
 # --- Directory variables -----------------------------------------------------
 MYSQL_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 MYSQL_ACTIONS_DIR="$MYSQL_DIR/actions"
+MYSQL_UTILITIES_DIR="$MYSQL_DIR/utilities"
 
-
+# --- Include Utilities -------------------------------------------------------
+source "$MYSQL_UTILITIES_DIR/mysql_utilities.sh"
 
 
 
@@ -50,10 +52,10 @@ _mysql_generate_menu_options() {
     _out+=("---|Manage Service")
 
     if is_mysql_running; then
-        _out+=("Stop|action_mysql_stop")
-        _out+=("Restart|action_mysql_restart")
+        _out+=("Stop Service|action_mysql_stop")
+        _out+=("Restart Service|action_mysql_restart")
     else
-        _out+=("Start|action_mysql_start")
+        _out+=("Start Service|action_mysql_start")
     fi
 
     _out+=("Enable on Boot|action_mysql_enable_on_boot")
@@ -67,8 +69,8 @@ _mysql_generate_menu_options() {
     _out+=("List Databases|action_mysql_list_databases")
     _out+=("Rename Database|action_mysql_rename_database")
     _out+=("---|Manage Users")
-    _out+=("Create User|action_mysql_create_user")
-    _out+=("Delete User|action_mysql_delete_user")
+    _out+=("Create MySql User|action_mysql_create_user")
+    _out+=("Delete MySql User|action_mysql_delete_user")
     _out+=("List Users|action_mysql_list_users")
     _out+=("---|")
     _out+=("Run Script|action_mysql_run_script")

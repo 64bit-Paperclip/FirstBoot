@@ -8,6 +8,7 @@
 
 # --- Action ------------------------------------------------------------------
 action_mysql_install() {
+    
     if pkg_installed "mysql-server"; then
         warn "MySQL is already installed."
         return 1

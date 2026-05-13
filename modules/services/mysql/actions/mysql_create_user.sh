@@ -94,7 +94,7 @@ EOF
 
     # --- Grant privileges ----------------------------------------------------
     echo ""
-    if confirm "Set up privileges for this user now?"; then
+    if confirm_prompt "Set up privileges for this user now?"; then
         if declare -f action_mysql_grant_privileges > /dev/null 2>&1; then
             MYSQL_GRANT_USER="$_mysql_cu_user"
             MYSQL_GRANT_HOST="$_mysql_cu_host"

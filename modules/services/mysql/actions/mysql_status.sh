@@ -104,7 +104,8 @@ action_mysql_status() {
         done
     fi
 
-    echo ""
+    section_end "MySQL Status"
+    wait_for_any_key
 }
 
 # --- Register ----------------------------------------------------------------
