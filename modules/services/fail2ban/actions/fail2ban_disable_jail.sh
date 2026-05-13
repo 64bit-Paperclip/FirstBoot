@@ -16,7 +16,7 @@ action_fail2ban_disable_jail() {
     fi
 
     local -a _F2B_DJ_ENABLED=()
-    _fail2ban_get_enabled_jails _F2B_DJ_ENABLED
+    fail2ban_get_enabled_jails _F2B_DJ_ENABLED
 
     if [ ${#_F2B_DJ_ENABLED[@]} -eq 0 ]; then
         info "No enabled jails found."
@@ -26,12 +26,13 @@ action_fail2ban_disable_jail() {
     _fail2ban_select_jail _F2B_DJ_ENABLED "Select jail to disable" || return 1
 
     local _F2B_DJ_FILE
-    _F2B_DJ_FILE=$(_fail2ban_get_jail_file "$_FAIL2BAN_SELECTED_JAIL")
+    _F2B_DJ_FILE=$(fail2ban_get_jail_file "$_FAIL2BAN_SELECTED_JAIL")
 
     sed -i 's/^enabled[[:space:]]*=.*/enabled = false/' "$_F2B_DJ_FILE"
     info "Jail '$_FAIL2BAN_SELECTED_JAIL' disabled."
 
     if is_fail2ban_running; then
+        fail2ban-client stop "$_FAIL2BAN_SELECTED_JAIL" 2>/dev/null && info "Jail stopped."
         fail2ban-client reload 2>/dev/null && info "Fail2ban reloaded."
     fi
 

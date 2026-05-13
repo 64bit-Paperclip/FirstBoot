@@ -8,19 +8,18 @@
 #
 # Purpose:
 #   Shared helper functions for fail2ban action scripts. Provides reusable
-#   jail file operations, jail selection, and active jail queries so action
+#   jail file operations and active jail queries so action
 #   scripts don't duplicate logic.
 #
 # Naming conventions:
-#   _fail2ban_get_*    -- retrieves data, outputs to stdout or nameref
-#   _fail2ban_select_* -- presents a selection prompt, returns chosen value
+#   fail2ban_get_*    -- retrieves data, outputs to stdout or nameref
 # =============================================================================
 
 # --- Jail file helpers -------------------------------------------------------
 
 # Get all jail names from jail.d/
-# Usage: _fail2ban_get_jail_names <nameref>
-_fail2ban_get_jail_names() {
+# Usage: fail2ban_get_jail_names <nameref>
+fail2ban_get_jail_names() {
     local -n _out="$1"
     _out=()
     [ ! -d /etc/fail2ban/jail.d ] && return 0
@@ -34,8 +33,8 @@ _fail2ban_get_jail_names() {
 }
 
 # Get only enabled jail names from jail.d/
-# Usage: _fail2ban_get_enabled_jails <nameref>
-_fail2ban_get_enabled_jails() {
+# Usage: fail2ban_get_enabled_jails <nameref>
+fail2ban_get_enabled_jails() {
     local -n _out="$1"
     _out=()
     [ ! -d /etc/fail2ban/jail.d ] && return 0
@@ -50,8 +49,8 @@ _fail2ban_get_enabled_jails() {
 }
 
 # Get only disabled jail names from jail.d/
-# Usage: _fail2ban_get_disabled_jails <nameref>
-_fail2ban_get_disabled_jails() {
+# Usage: fail2ban_get_disabled_jails <nameref>
+fail2ban_get_disabled_jails() {
     local -n _out="$1"
     _out=()
     [ ! -d /etc/fail2ban/jail.d ] && return 0
@@ -66,65 +65,19 @@ _fail2ban_get_disabled_jails() {
 }
 
 # Get the jail.d/ file path for a given jail name
-# Usage: _fail2ban_get_jail_file <jail_name>
+# Usage: fail2ban_get_jail_file <jail_name>
 # Outputs file path to stdout
-_fail2ban_get_jail_file() {
+fail2ban_get_jail_file() {
     local _F2B_U_JAIL_NAME="$1"
     echo "/etc/fail2ban/jail.d/${_F2B_U_JAIL_NAME}.conf"
 }
 
-# --- Jail selection ----------------------------------------------------------
-
-# Present a numbered list of jails and prompt for selection
-# Usage: _fail2ban_select_jail <nameref_array> <prompt>
-# Sets _FAIL2BAN_SELECTED_JAIL to the chosen jail name
-_fail2ban_select_jail() {
-    local -n _f2b_u_jails="$1"
-    local _f2b_u_prompt="${2:-Select jail}"
-
-    if [ ${#_f2b_u_jails[@]} -eq 0 ]; then
-        warn "No jails available."
-        return 1
-    fi
-
-    echo ""
-    local _f2b_u_count=${#_f2b_u_jails[@]}
-    local _f2b_u_rows=$(( (_f2b_u_count + 2) / 3 ))
-    local _f2b_u_col _f2b_u_row _f2b_u_idx _f2b_u_entry
-
-    for (( _f2b_u_row=0; _f2b_u_row<_f2b_u_rows; _f2b_u_row++ )); do
-        printf " "
-        for (( _f2b_u_col=0; _f2b_u_col<3; _f2b_u_col++ )); do
-            _f2b_u_idx=$(( _f2b_u_row + _f2b_u_col * _f2b_u_rows ))
-            if [ $_f2b_u_idx -lt $_f2b_u_count ]; then
-                _f2b_u_entry=$(printf "%d) %s" $(( _f2b_u_idx + 1 )) "${_f2b_u_jails[$_f2b_u_idx]}")
-                printf "%-25.25s  " "$_f2b_u_entry"
-            fi
-        done
-        echo ""
-    done
-
-    echo ""
-
-    local _f2b_u_choice
-    while true; do
-        read -rp "  ${_f2b_u_prompt}: " _f2b_u_choice
-        if [[ "$_f2b_u_choice" =~ ^[0-9]+$ ]] && \
-           [ "$_f2b_u_choice" -ge 1 ] && \
-           [ "$_f2b_u_choice" -le "$_f2b_u_count" ]; then
-            break
-        fi
-        warn "Invalid selection."
-    done
-
-    _FAIL2BAN_SELECTED_JAIL="${_f2b_u_jails[$(( _f2b_u_choice - 1 ))]}"
-}
 
 # --- Active jail queries -----------------------------------------------------
 
 # Get list of currently active jails from fail2ban-client
-# Usage: _fail2ban_get_active_jails <nameref>
-_fail2ban_get_active_jails() {
+# Usage: fail2ban_get_active_jails <nameref>
+fail2ban_get_active_jails() {
     local -n _out="$1"
     _out=()
     local _F2B_U_RAW
@@ -136,9 +89,9 @@ _fail2ban_get_active_jails() {
 }
 
 # Get currently banned IP count for a jail
-# Usage: _fail2ban_get_jail_banned <jail_name>
+# Usage: fail2ban_get_jail_banned <jail_name>
 # Outputs count to stdout
-_fail2ban_get_jail_banned() {
+fail2ban_get_jail_banned() {
     local _F2B_U_JAIL="$1"
     fail2ban-client status "$_F2B_U_JAIL" 2>/dev/null | grep "Currently banned" | awk '{print $NF}'
 }
@@ -146,14 +99,14 @@ _fail2ban_get_jail_banned() {
 # Get total failed count for a jail
 # Usage: _fail2ban_get_jail_failed <jail_name>
 # Outputs count to stdout
-_fail2ban_get_jail_failed() {
+fail2ban_get_jail_failed() {
     local _F2B_U_JAIL="$1"
     fail2ban-client status "$_F2B_U_JAIL" 2>/dev/null | grep "Total failed" | awk '{print $NF}'
 }
 
 # Get list of banned IPs for a jail
-# Usage: _fail2ban_get_jail_banned_ips <jail_name> <nameref>
-_fail2ban_get_jail_banned_ips() {
+# Usage: fail2ban_get_jail_banned_ips <jail_name> <nameref>
+fail2ban_get_jail_banned_ips() {
     local _F2B_U_JAIL="$1"
     local -n _out="$2"
     _out=()
@@ -164,78 +117,3 @@ _fail2ban_get_jail_banned_ips() {
     done
 }
 
-
-
-
-# Collect and validate ban time
-# Usage: _fail2ban_collect_bantime <varname>
-_fail2ban_collect_bantime() {
-    local -n _out="$1"
-    while true; do
-        read -rp "  Ban time (e.g. 10m, 1h, 1d) [1h]: " _out
-        _out="${_out:-1h}"
-        if [[ "$_out" =~ ^[0-9]+(s|m|h|d|w)$ ]]; then
-            break
-        fi
-        warn "Invalid format. Use a number followed by s, m, h, d, or w (e.g. 10m, 1h, 7d)."
-    done
-}
-
-# Collect and validate find time
-# Usage: _fail2ban_collect_findtime <varname>
-_fail2ban_collect_findtime() {
-    local -n _out="$1"
-    while true; do
-        read -rp "  Find time (e.g. 10m, 1h) [10m]: " _out
-        _out="${_out:-10m}"
-        if [[ "$_out" =~ ^[0-9]+(s|m|h|d|w)$ ]]; then
-            break
-        fi
-        warn "Invalid format. Use a number followed by s, m, h, d, or w (e.g. 10m, 1h)."
-    done
-}
-
-# Collect and validate max retries
-# Usage: _fail2ban_collect_maxretry <varname>
-_fail2ban_collect_maxretry() {
-    local -n _out="$1"
-    while true; do
-        read -rp "  Max retries [5]: " _out
-        _out="${_out:-5}"
-        if [[ "$_out" =~ ^[0-9]+$ ]] && [ "$_out" -gt 0 ]; then
-            break
-        fi
-        warn "Invalid value. Must be a positive number."
-    done
-}
-
-# Collect and validate port(s)
-# Usage: _fail2ban_collect_port <varname>
-_fail2ban_collect_port() {
-    local -n _out="$1"
-    while true; do
-        read -rp "  Port(s) to watch (e.g. ssh, http, 80, 80,443) [ssh]: " _out
-        _out="${_out:-ssh}"
-        if [[ "$_out" =~ ^[a-z0-9,]+$ ]]; then
-            break
-        fi
-        warn "Invalid format. Use service names or port numbers separated by commas."
-    done
-}
-
-# Collect and validate log path
-# Usage: _fail2ban_collect_logpath <varname>
-_fail2ban_collect_logpath() {
-    local -n _out="$1"
-    while true; do
-        read -rp "  Log path (e.g. /var/log/auth.log): " _out
-        if [ -z "$_out" ]; then
-            warn "Log path cannot be empty."
-        elif [ ! -f "$_out" ]; then
-            warn "File '$_out' does not exist."
-            confirm_prompt "Use this path anyway?" && break
-        else
-            break
-        fi
-    done
-}

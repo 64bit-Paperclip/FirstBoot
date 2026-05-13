@@ -16,7 +16,7 @@ action_fail2ban_delete_jail() {
     fi
 
     local -a _f2b_dj_jails=()
-    _fail2ban_get_jail_names _f2b_dj_jails
+    fail2ban_get_jail_names _f2b_dj_jails
 
     if [ ${#_f2b_dj_jails[@]} -eq 0 ]; then
         warn "No jails configured in jail.d/."
@@ -28,7 +28,7 @@ action_fail2ban_delete_jail() {
     unset _FAIL2BAN_SELECTED_JAIL
 
     local _f2b_dj_file
-    _f2b_dj_file=$(_fail2ban_get_jail_file "$_f2b_dj_selected")
+    _f2b_dj_file=$(fail2ban_get_jail_file "$_f2b_dj_selected")
 
     echo ""
     warn "This will permanently delete the jail configuration:"

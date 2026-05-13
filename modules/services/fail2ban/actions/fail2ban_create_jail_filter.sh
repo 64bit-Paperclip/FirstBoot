@@ -22,7 +22,7 @@ action_fail2ban_create_jail_filter() {
 
     # Get existing jail names so we can exclude them
     local -a _f2b_cjb_existing=()
-    _fail2ban_get_jail_names _f2b_cjb_existing
+    fail2ban_get_jail_names _f2b_cjb_existing
 
     # Build list of available filters that don't already have a jail
     local -a _f2b_cjb_available=()
@@ -72,7 +72,7 @@ findtime = ${_f2b_cjb_findtime}"
     confirm_prompt "Write this jail configuration?" || return 1
 
     local _f2b_cjb_jail_file
-    _f2b_cjb_jail_file=$(_fail2ban_get_jail_file "$_f2b_cjb_selected")
+    _f2b_cjb_jail_file=$(fail2ban_get_jail_file "$_f2b_cjb_selected")
     echo "$_f2b_cjb_content" > "$_f2b_cjb_jail_file"
     info "Jail '$_f2b_cjb_selected' created at: $_f2b_cjb_jail_file"
 

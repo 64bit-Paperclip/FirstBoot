@@ -16,7 +16,7 @@ action_fail2ban_enable_jail() {
     fi
 
     local -a _F2B_EJ_DISABLED=()
-    _fail2ban_get_disabled_jails _F2B_EJ_DISABLED
+    fail2ban_get_disabled_jails _F2B_EJ_DISABLED
 
     if [ ${#_F2B_EJ_DISABLED[@]} -eq 0 ]; then
         info "No disabled jails found."
@@ -26,13 +26,15 @@ action_fail2ban_enable_jail() {
     _fail2ban_select_jail _F2B_EJ_DISABLED "Select jail to enable" || return 1
 
     local _F2B_EJ_FILE
-    _F2B_EJ_FILE=$(_fail2ban_get_jail_file "$_FAIL2BAN_SELECTED_JAIL")
+    _F2B_EJ_FILE=$(fail2ban_get_jail_file "$_FAIL2BAN_SELECTED_JAIL")
 
     sed -i 's/^enabled[[:space:]]*=.*/enabled = true/' "$_F2B_EJ_FILE"
     info "Jail '$_FAIL2BAN_SELECTED_JAIL' enabled."
 
     if is_fail2ban_running; then
         fail2ban-client reload "$_FAIL2BAN_SELECTED_JAIL" 2>/dev/null && info "Jail reloaded."
+        fail2ban-client start "$_FAIL2BAN_SELECTED_JAIL" 2>/dev/null && info "Jail started."
+        
     fi
 
     unset _FAIL2BAN_SELECTED_JAIL

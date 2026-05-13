@@ -53,7 +53,7 @@ action_fail2ban_status() {
     fi
 
     local -a _F2B_ST_ACTIVE=()
-    _fail2ban_get_active_jails _F2B_ST_ACTIVE
+    fail2ban_get_active_jails _F2B_ST_ACTIVE
 
     if [ ${#_F2B_ST_ACTIVE[@]} -eq 0 ]; then
         echo "    No active jails."
@@ -62,8 +62,8 @@ action_fail2ban_status() {
         printf "    %-25s %-10s %-10s %s\n" "-------------------------" "----------" "----------" "--------"
         for _F2B_ST_JAIL in "${_F2B_ST_ACTIVE[@]}"; do
             local _F2B_ST_BANNED _F2B_ST_FAILED _F2B_ST_BANTIME_JAIL
-            _F2B_ST_BANNED=$(_fail2ban_get_jail_banned "$_F2B_ST_JAIL")
-            _F2B_ST_FAILED=$(_fail2ban_get_jail_failed "$_F2B_ST_JAIL")
+            _F2B_ST_BANNED=$(fail2ban_get_jail_banned "$_F2B_ST_JAIL")
+            _F2B_ST_FAILED=$(fail2ban_get_jail_failed "$_F2B_ST_JAIL")
             _F2B_ST_BANTIME_JAIL=$(fail2ban-client get "$_F2B_ST_JAIL" bantime 2>/dev/null)
             printf "    %-25s %-10s %-10s %s\n" "$_F2B_ST_JAIL" "${_F2B_ST_BANNED:-0}" "${_F2B_ST_FAILED:-0}" "${_F2B_ST_BANTIME_JAIL:-default}"
         done

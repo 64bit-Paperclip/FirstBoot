@@ -22,9 +22,10 @@ FAIL2BAN_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 FAIL2BAN_ACTIONS_DIR="$FAIL2BAN_DIR/actions"
 FAIL2BAN_UTILITIES_DIR="$FAIL2BAN_DIR/utilities"
 
-
 # --- Include Utilities -------------------------------------------------------
 source "$FAIL2BAN_UTILITIES_DIR/fail2ban_utilities.sh"
+source "$FAIL2BAN_UTILITIES_DIR/fail2ban_input.sh"
+source "$FAIL2BAN_UTILITIES_DIR/fail2ban_ui.sh"
 
 # --- Global Utility Functions ------------------------------------------------
 is_fail2ban_installed() {
@@ -61,17 +62,15 @@ _fail2ban_generate_menu_options() {
     _out+=("Enable on Boot|action_fail2ban_enable")
     _out+=("Disable on Boot|action_fail2ban_disable")
     _out+=("---|Manage Jails")
-    _out+=("Create Custom Jail|action_fail2ban_create_jail_custom")
-    _out+=("Create Jail from Filter|action_fail2ban_create_jail_filter")
+    _out+=("Create Jail|action_fail2ban_create_jail_filter")
     _out+=("Delete Jail|action_fail2ban_delete_jail")
     _out+=("Disable Jail|action_fail2ban_disable_jail")
     _out+=("Enable Jail|action_fail2ban_enable_jail")
     _out+=("List Jails|action_fail2ban_list_jails")
     _out+=("---|Manage Bans")
     _out+=("Ban IP|action_fail2ban_ban_ip")
-    _out+=("List Banned IPs|action_fail2ban_list_banned")
+    _out+=("Is IP Banned|action_fail2ban_is_ip_banned")
     _out+=("Unban IP|action_fail2ban_unban_ip")
-    _out+=("Unban All|action_fail2ban_unban_all")
     _out+=("---|Manage Configurations")
     _out+=("Configure|action_fail2ban_configure")
 }
