@@ -28,7 +28,7 @@ action_mysql_create_user() {
             warn "Username cannot be empty."
         elif [[ ! "$_mysql_cu_user" =~ ^[a-zA-Z0-9_]+$ ]]; then
             warn "Username can only contain letters, numbers, and underscores."
-        elif mysql -u root -e "SELECT COUNT(*) FROM mysql.user WHERE User='${_mysql_cu_user}';" 2>/dev/null | grep -q "^[^0]"; then
+        elif [ "$(mysql -u root -se "SELECT COUNT(*) FROM mysql.user WHERE User='${_mysql_cu_user}';" 2>/dev/null)" -gt 0 ]; then
             warn "User '$_mysql_cu_user' already exists."
         else
             break
