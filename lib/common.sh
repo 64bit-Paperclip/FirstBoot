@@ -36,12 +36,12 @@ is_user_super_user() {
     [ "$EUID" -eq 0 ]
 }
 
-is_firstboot_installed() {
-    [ "$FIRSTBOOT_SCRIPT_DIR" = "$FIRSTBOOT_INSTALL_DIR" ]
+is_firstboot_running_installed() {
+    [ "$SCRIPT_DIR" = "$FIRSTBOOT_INSTALL_DIR" ]
 }
 
-is_firstboot_portable() {
-    ! is_firstboot_installed
+is_firstboot_running_portable() {
+    ! is_firstboot_running_installed
 }
 
 has_sudo_users() {

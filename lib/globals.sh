@@ -64,9 +64,6 @@ STRIKETHROUGH='\033[9m'
 NC='\033[0m'
 
 
-# --- Directory Info -----------------------------------------------------------
-FIRSTBOOT_INSTALL_DIR="/opt/firstboot"
-FIRSTBOOT_SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 # --- Logging -----------------------------------------------------------------
 LOG_DIR="/var/log/firstboot"

@@ -1,10 +1,10 @@
 #!/bin/bash
 
 INSTALL_DIR="/opt/firstboot"
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+FIRSTBOOT_RUN_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 # Already installed in the right place
-if [ "$SCRIPT_DIR" = "$INSTALL_DIR" ]; then
+if [ "$FIRSTBOOT_RUN_DIR" = "$INSTALL_DIR" ]; then
     echo "FirstBoot is already installed."
     echo ""
     echo "  To run:     firstboot"
@@ -14,11 +14,11 @@ if [ "$SCRIPT_DIR" = "$INSTALL_DIR" ]; then
 fi
 
 # Running from /opt but not /opt/firstboot — don't mess with /opt
-if [[ "$SCRIPT_DIR" == /opt/* ]]; then
-    echo "Error: Running from $SCRIPT_DIR — won't move from inside /opt."
+if [[ "$FIRSTBOOT_RUN_DIR" == /opt/* ]]; then
+    echo "Error: Running from $FIRSTBOOT_RUN_DIR — won't move from inside /opt."
     echo ""
     echo "  Move FirstBoot outside of /opt and re-run install.sh"
-    echo "  Or manually move it: mv $SCRIPT_DIR $INSTALL_DIR"
+    echo "  Or manually move it: mv $FIRSTBOOT_RUN_DIR $INSTALL_DIR"
     echo ""
     exit 1
 fi
@@ -44,7 +44,7 @@ if [ "$EUID" -ne 0 ]; then
 fi
 
 # Move into place
-mv "$SCRIPT_DIR" "$INSTALL_DIR"
+mv "$FIRSTBOOT_RUN_DIR" "$INSTALL_DIR"
 ln -sf "$INSTALL_DIR/firstboot.sh" /usr/local/bin/firstboot
 
 echo ""

@@ -17,14 +17,19 @@ set -uo pipefail
 # --- Must run as root --------------------------------------------------------
 [ "$EUID" -ne 0 ] && echo "[✗] Please run as root: sudo bash firstboot.sh" && exit 1
 
+# --- Directory Info -----------------------------------------------------------
+FIRSTBOOT_INSTALL_DIR="/opt/firstboot"
+FIRSTBOOT_USER_DIR="/etc/firstboot"
+
 # --- Resolve script directory ------------------------------------------------
 # Works regardless of where you call the script from
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-LIB_DIR="$SCRIPT_DIR/lib"
-MODULE_DIR="$SCRIPT_DIR/modules"
+FIRSTBOOT_RUN_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+LIB_DIR="$FIRSTBOOT_RUN_DIR/lib"
+MODULE_DIR="$FIRSTBOOT_RUN_DIR/modules"
 SERVICE_GROUPS_DIR="$MODULE_DIR/groups"
 SERVICES_DIR="$MODULE_DIR/services"
 ACTIONS_DIR="$MODULE_DIR/actions"
+
 
 # --- Verify directory structure ----------------------------------------------
 [ ! -d "$LIB_DIR" ]              && echo "[x] Cannot find lib/ directory. Expected at: $LIB_DIR" && exit 1
@@ -49,20 +54,16 @@ source "$LIB_DIR/services.sh"
 source "$LIB_DIR/actions.sh"
 source "$LIB_DIR/status.sh"
 
-# --- Source all modules ------------------------------------------------------
-source_groups
-source_services
-source_actions
-
-# --- Banner ------------------------------------------------------------------
-draw_banner
-
 if is_user_root; then
     warn "You are currently logged in and running FirstBoot as root."
 fi
 
-if is_firstboot_portable; then
+if is_firstboot_running_portable; then
+    FIRSTBOOT_USER_DIR="$FIRSTBOOT_RUN_DIR/user"
     warn "You are running FirstBoot in portable mode. Some Features may not be available."
+    warn "Custom user scripts and data are loaded from:"
+    warn "   $FIRSTBOOT_USER_DIR"
+    wait_for_any_key
 fi
 
 # --- Logging setup -----------------------------------------------------------
@@ -72,9 +73,16 @@ exec > >(tee -a "$LOG_FILE") 2>&1
 
 info "Logging to: $LOG_FILE"
 
+# --- Source all modules ------------------------------------------------------
+source_groups
+source_services
+source_actions
+
+# --- Banner ------------------------------------------------------------------
+draw_banner
+
 # --- Status -------------------------------------------------------------------
 show_status
-
 
 MAIN_MENU_OPTIONS=(
     "---|Recommended Actions"
