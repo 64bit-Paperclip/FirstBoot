@@ -30,9 +30,45 @@ is_ufw_running() {
     svc_running "$UFW_SERVICE"
 }
 
+_ufw_generate_menu_options() {
+    local -n _out="$1"
+    _out=()
+
+    if is_ufw_installed; then
+        _out+=("Uninstall UFW|action_ufw_uninstall")
+    else
+        _out+=("Install UFW|action_ufw_install")
+        return 0
+    fi
+
+    _out+=("---|")
+
+    if ufw status 2>/dev/null | grep -q "Status: active"; then
+        _out+=("Disable UFW|action_ufw_disable")
+    else
+        _out+=("Enable UFW|action_ufw_enable")
+    fi
+
+    _out+=("Status|action_ufw_status")
+    _out+=("Reset UFW|action_ufw_reset")
+    _out+=("---|")
+    _out+=("List Rules|action_ufw_list_rules")
+    _out+=("Allow Port|action_ufw_allow_port")
+    _out+=("Deny Port|action_ufw_deny_port")
+    _out+=("Allow IP|action_ufw_allow_ip")
+    _out+=("Deny IP|action_ufw_deny_ip")
+    _out+=("Delete Rule|action_ufw_delete_rule")
+    _out+=("---|")
+    _out+=("Set Default Incoming|action_ufw_set_default_incoming")
+    _out+=("Set Default Outgoing|action_ufw_set_default_outgoing")
+    _out+=("---|")
+    _out+=("Enable Logging|action_ufw_enable_logging")
+    _out+=("Disable Logging|action_ufw_disable_logging")
+}
+
 # --- Entry function ----------------------------------------------------------
 ufw_entry() {
-    echo "UFW control not yet complete"
+    dynamic_command_menu _ufw_generate_menu_options "UFW Firewall"
 }
 
 # --- Register ----------------------------------------------------------------

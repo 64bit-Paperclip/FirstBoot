@@ -71,8 +71,6 @@ _fail2ban_generate_menu_options() {
     _out+=("Ban IP|action_fail2ban_ban_ip")
     _out+=("Is IP Banned|action_fail2ban_is_ip_banned")
     _out+=("Unban IP|action_fail2ban_unban_ip")
-    _out+=("---|Manage Configurations")
-    _out+=("Configure|action_fail2ban_configure")
 }
 
 # --- Entry function ----------------------------------------------------------
