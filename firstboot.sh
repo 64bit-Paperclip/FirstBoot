@@ -86,7 +86,7 @@ MAIN_MENU_OPTIONS=(
 	"Manage Service|services_menu"
 	"Manage Users|show_status"
 	"Run Individual Action|draw_actions_menu"
-    "---|First Boot"
+    "---|FirstBoot"
     "Settings|show_status"
 	"View Logs|show_status"
 )

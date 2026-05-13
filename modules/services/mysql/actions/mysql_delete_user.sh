@@ -14,7 +14,7 @@ _mysql_du_by_user_host() {
     local -a _mysql_du_pairs=()
     while IFS=$'\t' read -r _mysql_du_u _mysql_du_h; do
         _mysql_du_pairs+=("${_mysql_du_u}@${_mysql_du_h}")
-    done <<< "$(_mysql_du_get_users)"
+    done <<< "$(mysql_get_users)"
  
     if [ ${#_mysql_du_pairs[@]} -eq 0 ]; then
         warn "No users found."
@@ -67,7 +67,7 @@ _mysql_du_by_username() {
             [ "$_mysql_du_existing" = "$_mysql_du_u" ] && _mysql_du_found=true && break
         done
         [ "$_mysql_du_found" = false ] && _mysql_du_names+=("$_mysql_du_u")
-    done <<< "$(_mysql_du_get_users)"
+    done <<< "$(mysql_get_users)"
  
     if [ ${#_mysql_du_names[@]} -eq 0 ]; then
         warn "No users found."
@@ -100,7 +100,7 @@ _mysql_du_by_username() {
     warn "This will drop the following entries:"
     while IFS=$'\t' read -r _mysql_du_u _mysql_du_h; do
         [ "$_mysql_du_u" = "$_mysql_du_selected" ] && echo "    '${_mysql_du_u}'@'${_mysql_du_h}'"
-    done <<< "$(_mysql_du_get_users)"
+    done <<< "$(mysql_get_users)"
     echo ""
  
     confirm_prompt "Are you sure?" || return 1
@@ -119,7 +119,7 @@ _mysql_du_by_host() {
             [ "$_mysql_du_existing" = "$_mysql_du_h" ] && _mysql_du_found=true && break
         done
         [ "$_mysql_du_found" = false ] && _mysql_du_hosts+=("$_mysql_du_h")
-    done <<< "$(_mysql_du_get_users)"
+    done <<< "$(mysql_get_users)"
  
     if [ ${#_mysql_du_hosts[@]} -eq 0 ]; then
         warn "No hosts found."
@@ -152,7 +152,7 @@ _mysql_du_by_host() {
     warn "This will drop the following entries:"
     while IFS=$'\t' read -r _mysql_du_u _mysql_du_h; do
         [ "$_mysql_du_h" = "$_mysql_du_selected" ] && echo "    '${_mysql_du_u}'@'${_mysql_du_h}'"
-    done <<< "$(_mysql_du_get_users)"
+    done <<< "$(mysql_get_users)"
     echo ""
  
     confirm_prompt "Are you sure?" || return 1

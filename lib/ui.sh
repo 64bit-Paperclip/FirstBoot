@@ -136,7 +136,7 @@ dynamic_command_menu() {
             IFS='|' read -r label fn <<< "$entry"
             if [ "$label" = "---" ]; then
                 if [ -n "$fn" ]; then
-                    echo -e "    ${CYAN}-[ ${BOLD}$fn ${CYAN}]-${NC}"
+                    echo -e " ${CYAN}-[ ${BOLD}$fn ${CYAN}]-${NC}"
                 else
                     echo ""
                 fi
@@ -207,7 +207,7 @@ command_menu() {
             IFS='|' read -r label fn <<< "$entry"
             if [ "$label" = "---" ]; then
                 if [ -n "$fn" ]; then
-                    echo -e "    ${CYAN}-[ ${BOLD}$fn ${CYAN}]-${NC}"
+                    echo -e " ${CYAN}-[ ${NC}${BOLD}$fn ${NC}${CYAN}]-${NC}"
                 else
                     echo ""
                 fi
