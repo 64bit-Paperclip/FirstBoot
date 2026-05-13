@@ -141,7 +141,7 @@ draw_services_menu() {
     done
     echo ""
     echo "    0)  Back"
-    echo ""
+    
 }
 
 services_menu() {

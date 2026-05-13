@@ -118,7 +118,7 @@ log "info" "FirstBoot Started"
 show_status
 
 MAIN_MENU_OPTIONS=(
-    "---|Recommended Actions"
+    "---|System Setup"
     "Harden System|show_status"
     "---|System Management"
     "System Status|show_status"

@@ -108,39 +108,60 @@ required_prompt() {
     printf -v "$varname" '%s' "$value"
 }
 
+_draw_menu() {
+    local -n __options="$1"
+    local _title="$2"
+
+    section "$_title"
+    local i=1
+    local _idx=0
+    for entry in "${__options[@]}"; do
+        IFS='|' read -r label fn <<< "$entry"
+        if [ "$label" = "---" ]; then
+            if [ -n "$fn" ]; then
+                echo -e "    ${CYAN}[ ${BOLD}$fn ${NC}${CYAN}]${NC}"
+            else
+                echo ""
+            fi
+        else
+            printf "    %d)  %s\n" "$i" "$label"
+            (( i++ ))
+        fi
+        (( _idx++ ))
+    done
+    echo ""
+    echo "    0)  Back"
+    echo ""
+}
+
+
+_build_menu_index_map() {
+    local -n __options="$1"
+    local -n __index_map="$2"
+    __index_map=()
+    local _idx=0
+    for entry in "${__options[@]}"; do
+        IFS='|' read -r label fn <<< "$entry"
+        if [ "$label" != "---" ]; then
+            __index_map+=("$_idx")
+        fi
+        (( _idx++ ))
+    done
+}
+
 dynamic_command_menu() {
     local _generate_fn="$1"
     local _title="$2"
 
     while true; do
         local -a _dynamic_options=()
-        "$_generate_fn" _dynamic_options
-
-        section "$_title"
-        local i=1
         local -a _index_map=()
-        local _idx=0
-        for entry in "${_dynamic_options[@]}"; do
-            IFS='|' read -r label fn <<< "$entry"
-            if [ "$label" = "---" ]; then
-                if [ -n "$fn" ]; then
-                    echo -e "    ${CYAN}[ ${BOLD}$fn ${NC}${CYAN}]${NC}"
-                else
-                    echo ""
-                fi
-            else
-                printf "    %d)  %s\n" "$i" "$label"
-                _index_map+=("$_idx")
-                (( i++ ))
-            fi
-            (( _idx++ ))
-        done
-        echo ""
-        echo "    0)  Back"
-        echo ""
+        "$_generate_fn" _dynamic_options
+        _draw_menu _dynamic_options "$_title"
+        _build_menu_index_map _dynamic_options _index_map
+
         read -rp "  Selection: " CMD_CHOICE
 
-        # -- Go Back --
         if [ "$CMD_CHOICE" = "0" ] || [[ "${CMD_CHOICE,,}" == "back" ]]; then
             section_end "$_title"
             break
@@ -186,32 +207,14 @@ dynamic_command_menu() {
 command_menu() {
     local -n _options="$1"
     local _title="$2"
+
     while true; do
-        section "$_title"
-        local i=1
         local -a _index_map=()
-        local _idx=0
-        for entry in "${_options[@]}"; do
-            IFS='|' read -r label fn <<< "$entry"
-            if [ "$label" = "---" ]; then
-                if [ -n "$fn" ]; then
-                    echo -e "    ${CYAN}[ ${BOLD}$fn ${NC}${CYAN}]${NC}"
-                else
-                    echo ""
-                fi
-            else
-                printf "    %d)  %s\n" "$i" "$label"
-                _index_map+=("$_idx")
-                (( i++ ))
-            fi
-            (( _idx++ ))
-        done
-        echo ""
-        echo "    0)  Back"
-        echo ""
+        _draw_menu _options "$_title"
+        _build_menu_index_map _options _index_map
+
         read -rp "  Selection: " CMD_CHOICE
-        
-        # -- Go Back --
+
         if [ "$CMD_CHOICE" = "0" ] || [[ "${CMD_CHOICE,,}" == "back" ]]; then
             section_end "$_title"
             break
@@ -254,5 +257,4 @@ command_menu() {
     unset CMD_CHOICE
 }
 
-export -f section
 
