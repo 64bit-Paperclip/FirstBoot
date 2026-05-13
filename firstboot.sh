@@ -15,14 +15,7 @@
 set -uo pipefail
 
 # --- Must run as super user ---------------------------------------------------
-[ "$EUID" -ne 0 ] && echo "[✗] Please run as root: sudo bash firstboot.sh" && exit 1
-
-# --- Root User Check / Warning -----------------------------------------------
-if [ "$UID" -eq 0 ]; then
-    echo "-------------------------------------------------------------------------------"
-    echo "         You are currently logged in and running FirstBoot as root."
-    echo "-------------------------------------------------------------------------------"
-fi
+[ "$EUID" -ne 0 ] && echo "[✗] Please run as a Super User: sudo bash firstboot.sh" && exit 1
 
 # --- Directory Info -----------------------------------------------------------
 FIRSTBOOT_INSTALL_DIR="/opt/firstboot"
@@ -41,7 +34,6 @@ ACTIONS_DIR="$MODULE_DIR/actions"
 if [[ "$FIRSTBOOT_RUN_DIR" != "/opt/firstboot" ]]; then
     LOG_DIR="$FIRSTBOOT_RUN_DIR/logs"
     FIRSTBOOT_USER_DIR="$FIRSTBOOT_RUN_DIR/user"
-
 fi
 
 # --- Verify directory structure ----------------------------------------------
@@ -58,19 +50,23 @@ fi
 [ ! -d "$SERVICES_DIR" ]         && echo "[x] Cannot find modules/services/ directory. Expected at: $SERVICES_DIR" && exit 1
 [ ! -d "$ACTIONS_DIR" ]          && echo "[x] Cannot find modules/actions/ directory. Expected at: $ACTIONS_DIR" && exit 1
 
-# --- Ensure required directories exist --------------------------------------
-    mkdir -p "$LOG_DIR" || { echo "[x] Cannot create log directory: $LOG_DIR"; exit 1; }
-    mkdir -p "$FIRSTBOOT_USER_DIR" || { echo "[x] Cannot create user directory: $FIRSTBOOT_USER_DIR"; exit 1; }
-
-# --- Load common libs -------------------------------------------------------
+# --- Load required common libs -----------------------------------------------
 source "$LIB_DIR/globals.sh"
 source "$LIB_DIR/common.sh"
 source "$LIB_DIR/ui.sh"
 
+# --- Root User Check / Warning -----------------------------------------------
+if [ "$UID" -eq 0 ]; then
+    echo "-------------------------------------------------------------------------------"
+    warn "You are currently logged in and running FirstBoot as root."
+    echo "-------------------------------------------------------------------------------"
+    confirm_prompt "Are you sure you wish to contnue?" || { exit 1;}
+fi
+
 # --- Portable Check / Warning -----------------------------------------------
 if is_firstboot_running_portable; then
-    echo "-------------------------------------------------------------------------------"
     warn "You are running FirstBoot in portable mode. Some Features may not be available."
+    echo "-------------------------------------------------------------------------------"
     echo "  Log files will be placed in:"
     echo "      $LOG_DIR"
     echo "  User defined modules, scripts, and data are loaded from:"
@@ -79,21 +75,23 @@ if is_firstboot_running_portable; then
     wait_for_any_key
 fi
 
-# --- Load Module -----------------------------------------------------------
-source "$LIB_DIR/groups.sh"
-source "$LIB_DIR/services.sh"
-source "$LIB_DIR/actions.sh"
-source "$LIB_DIR/status.sh"
-
-
-
-
 # --- Logging setup -----------------------------------------------------------
 mkdir -p "$LOG_DIR"
 # Tee all output to log file while still showing on terminal
 exec > >(tee -a "$LOG_FILE") 2>&1
 
 info "Logging to: $LOG_FILE"
+
+
+# --- Ensure required directories exist ---------------------------------------
+mkdir -p "$LOG_DIR" || { echo "[x] Cannot create log directory: $LOG_DIR"; exit 1; }
+mkdir -p "$FIRSTBOOT_USER_DIR" || { echo "[x] Cannot create user directory: $FIRSTBOOT_USER_DIR"; exit 1; }
+
+# --- Load Module -------------------------------------------------------------
+source "$LIB_DIR/groups.sh"
+source "$LIB_DIR/services.sh"
+source "$LIB_DIR/actions.sh"
+source "$LIB_DIR/status.sh"
 
 # --- Source all modules ------------------------------------------------------
 source_groups
@@ -103,7 +101,7 @@ source_actions
 # --- Banner ------------------------------------------------------------------
 draw_banner
 
-# --- Status -------------------------------------------------------------------
+# --- Status ------------------------------------------------------------------
 show_status
 
 MAIN_MENU_OPTIONS=(
