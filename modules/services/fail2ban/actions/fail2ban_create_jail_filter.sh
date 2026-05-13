@@ -76,9 +76,11 @@ findtime = ${_f2b_cjb_findtime}"
     echo "$_f2b_cjb_content" > "$_f2b_cjb_jail_file"
     info "Jail '$_f2b_cjb_selected' created at: $_f2b_cjb_jail_file"
 
-    if is_fail2ban_running; then
-        fail2ban-client reload "$_f2b_cjb_selected" 2>/dev/null && info "Jail loaded."
-    fi
+if is_fail2ban_running; then
+    fail2ban-client reload 2>/dev/null && \
+    fail2ban-client reload "$_f2b_cjb_selected" 2>/dev/null && \
+        info "Jail loaded."
+fi
 }
 
 # --- Register ----------------------------------------------------------------

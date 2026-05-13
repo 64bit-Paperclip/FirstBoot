@@ -119,6 +119,7 @@ _draw_menu() {
         IFS='|' read -r label fn <<< "$entry"
         if [ "$label" = "---" ]; then
             if [ -n "$fn" ]; then
+                echo ""
                 echo -e "    ${CYAN}[ ${BOLD}$fn ${NC}${CYAN}]${NC}"
             else
                 echo ""
@@ -131,7 +132,6 @@ _draw_menu() {
     done
     echo ""
     echo "    0)  Back"
-    echo ""
     section_end "$_title"
 }
 
