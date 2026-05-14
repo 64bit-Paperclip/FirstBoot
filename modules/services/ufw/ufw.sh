@@ -20,6 +20,10 @@ SVC_UFW="not installed"
 # --- Directory variables -----------------------------------------------------
 UFW_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 UFW_ACTIONS_DIR="$UFW_DIR/actions"
+UFW_UTILITIES_DIR="$UFW_DIR/utilities"
+
+# --- Include Utilities -------------------------------------------------------
+source "$UFW_UTILITIES_DIR/ufw_utilities.sh"
 
 # --- Global Utility Functions ------------------------------------------------
 is_ufw_installed() {
@@ -27,18 +31,16 @@ is_ufw_installed() {
 }
 
 is_ufw_running() {
-    svc_running "$UFW_SERVICE"
+    ufw status 2>/dev/null | grep -q "Status: active"
 }
 
 _ufw_generate_menu_options() {
     local -n _out="$1"
     _out=()
 
-
-
     _out+=("---|")
 
-    if ufw status 2>/dev/null | grep -q "Status: active"; then
+    if is_ufw_running; then
         _out+=("Disable UFW|action_ufw_disable")
     else
         _out+=("Enable UFW|action_ufw_enable")
