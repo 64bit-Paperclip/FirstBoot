@@ -12,7 +12,7 @@ UNATTENDED_SERVICE="unattended-upgrades"
 UNATTENDED_PACKAGE="unattended-upgrades"
 UNATTENDED_SVC_VAR="SVC_UNATTENDED"
 UNATTENDED_GROUP="security"
-UNATTENDED_ENTRY="unattended_entry"
+UNATTENDED_ENTRY="unattended_upgrades_entry"
 
 # --- Initialize status variable ----------------------------------------------
 SVC_UNATTENDED="not installed"
