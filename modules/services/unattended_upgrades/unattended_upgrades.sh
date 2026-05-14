@@ -44,7 +44,7 @@ _unattended_upgrades_generate_menu_options() {
 
     _out+=("---|")
 
-    _out+=("Status|action_unattended_status")
+    _out+=("Status|action_unattended_upgrades_status")
     _out+=("Enable on Boot|action_unattended_enable")
     _out+=("Disable on Boot|action_unattended_disable")
     _out+=("---|")
