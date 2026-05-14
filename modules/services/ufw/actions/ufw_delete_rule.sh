@@ -71,7 +71,7 @@ action_ufw_delete_rule() {
     # Strip 'ufw ' prefix if present and build delete command
     local _ufw_dr_cmd
     _ufw_dr_cmd=$(echo "$_ufw_dr_selected" | sed 's/^ufw //')
-    ufw delete $ufw_dr_cmd 2>/dev/null || { error "Failed to delete rule."; return 1; }
+    ufw delete $_ufw_dr_cmd 2>/dev/null || { error "Failed to delete rule."; return 1; }
     info "Rule deleted successfully."
 }
 
