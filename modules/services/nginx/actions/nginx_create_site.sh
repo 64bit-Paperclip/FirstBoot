@@ -19,7 +19,7 @@ _nginx_collect_domain() {
 
     if [ -f "/etc/nginx/sites-available/$_NGINX_CS_DOMAIN" ]; then
         warn "Site '$_NGINX_CS_DOMAIN' already exists."
-        confirm "Overwrite existing configuration?" || return 1
+        confirm_prompt "Overwrite existing configuration?" || return 1
     fi
 
     echo ""
@@ -41,13 +41,13 @@ _nginx_collect_domain() {
 _nginx_collect_network() {
     echo ""
 	
-    confirm "Listen on all IPv4 addresses?" \
+    confirm_prompt "Listen on all IPv4 addresses?" \
         && _NGINX_CS_IPV4="0.0.0.0" \
         || prompt_required "IPv4 address to listen on" _NGINX_CS_IPV4
 
-    if confirm "Listen on IPv6?"; then
+    if confirm_prompt "Listen on IPv6?"; then
         _NGINX_CS_IPV6=true
-        confirm "Listen on all IPv6 addresses?" \
+        confirm_prompt "Listen on all IPv6 addresses?" \
             && _NGINX_CS_IPV6_ADDR="::" \
             || prompt_required "IPv6 address to listen on" _NGINX_CS_IPV6_ADDR
     else
@@ -60,9 +60,9 @@ _nginx_collect_general() {
     echo ""
     read -rp "  Client max body size [1m]: " _NGINX_CS_MAX_BODY
     _NGINX_CS_MAX_BODY="${_NGINX_CS_MAX_BODY:-1m}"
-    confirm "Enable gzip compression?"  && _NGINX_CS_GZIP=true             || _NGINX_CS_GZIP=false
-    confirm "Add security headers?"     && _NGINX_CS_SECURITY_HEADERS=true || _NGINX_CS_SECURITY_HEADERS=false
-    confirm "Enable access logging?"    && _NGINX_CS_ACCESS_LOG=true       || _NGINX_CS_ACCESS_LOG=false
+    confirm_prompt "Enable gzip compression?"  && _NGINX_CS_GZIP=true             || _NGINX_CS_GZIP=false
+    confirm_prompt "Add security headers?"     && _NGINX_CS_SECURITY_HEADERS=true || _NGINX_CS_SECURITY_HEADERS=false
+    confirm_prompt "Enable access logging?"    && _NGINX_CS_ACCESS_LOG=true       || _NGINX_CS_ACCESS_LOG=false
 }
 
 _nginx_collect_ssl() {
@@ -74,10 +74,10 @@ _nginx_collect_ssl() {
         return 0
     fi
 
-    if confirm "Set up SSL with Certbot?"; then
+    if confirm_prompt "Set up SSL with Certbot?"; then
         _NGINX_CS_SSL=true
         warn "Note: If your app handles HTTPS redirection internally, enabling it here may cause redirect loops."
-        confirm "Redirect HTTP to HTTPS?" && _NGINX_CS_SSL_REDIRECT=true || _NGINX_CS_SSL_REDIRECT=false
+        confirm_prompt "Redirect HTTP to HTTPS?" && _NGINX_CS_SSL_REDIRECT=true || _NGINX_CS_SSL_REDIRECT=false
     else
         _NGINX_CS_SSL=false
         _NGINX_CS_SSL_REDIRECT=false
@@ -93,7 +93,7 @@ _nginx_collect_static() {
     section "General Options"; _nginx_collect_general
 	
     prompt_required "Document root (e.g. /var/www/$_NGINX_CS_DOMAIN)" _NGINX_CS_ROOT
-    confirm "Enable static file caching?" && _NGINX_CS_STATIC_CACHE=true || _NGINX_CS_STATIC_CACHE=false
+    confirm_prompt "Enable static file caching?" && _NGINX_CS_STATIC_CACHE=true || _NGINX_CS_STATIC_CACHE=false
 	
 	section "SSL"
 	_nginx_collect_ssl
@@ -143,7 +143,7 @@ _nginx_collect_php() {
         prompt_required "PHP-FPM port" _NGINX_CS_PHP_PORT
         _NGINX_CS_PHP_SOCKET="127.0.0.1:$_NGINX_CS_PHP_PORT"
     fi
-    confirm "Hide PHP version header?" && _NGINX_CS_PHP_HIDE_VERSION=true || _NGINX_CS_PHP_HIDE_VERSION=false
+    confirm_prompt "Hide PHP version header?" && _NGINX_CS_PHP_HIDE_VERSION=true || _NGINX_CS_PHP_HIDE_VERSION=false
 	
 	section "SSL"
 	_nginx_collect_ssl
@@ -180,7 +180,7 @@ _nginx_collect_proxy() {
     read -rp "  Upstream host [127.0.0.1]: " _NGINX_CS_PROXY_HOST
     _NGINX_CS_PROXY_HOST="${_NGINX_CS_PROXY_HOST:-127.0.0.1}"
     prompt_required "Upstream port (e.g. 5000)" _NGINX_CS_PROXY_PORT
-    confirm "Enable WebSocket support?" && _NGINX_CS_PROXY_WS=true || _NGINX_CS_PROXY_WS=false
+    confirm_prompt "Enable WebSocket support?" && _NGINX_CS_PROXY_WS=true || _NGINX_CS_PROXY_WS=false
     echo ""
     echo "  Proxy timeouts (hit enter to accept defaults):"
     read -rp "  Connect timeout [60s]: " _NGINX_CS_PROXY_CONNECT_TIMEOUT; _NGINX_CS_PROXY_CONNECT_TIMEOUT="${_NGINX_CS_PROXY_CONNECT_TIMEOUT:-60s}"
@@ -208,7 +208,7 @@ _nginx_preview_config() {
     section "Configuration Preview"
     echo "$_NGINX_CS_CONFIG_CONTENT"
     echo ""
-    confirm "Does this look correct?" || { _nginx_cleanup; return 1; }
+    confirm_prompt "Does this look correct?" || { _nginx_cleanup; return 1; }
     echo "$_NGINX_CS_CONFIG_CONTENT" > "$_NGINX_CS_CONFIG"
     info "Configuration written to: $_NGINX_CS_CONFIG"
 }
@@ -218,7 +218,7 @@ _nginx_preview_config() {
 # =============================================================================
 
 _nginx_enable_site() {
-    confirm "Enable site now?" || return 0
+    confirm_prompt "Enable site now?" || return 0
 	
     ln -sf "$_NGINX_CS_CONFIG" "/etc/nginx/sites-enabled/$_NGINX_CS_DOMAIN"
 	
@@ -234,7 +234,7 @@ _nginx_enable_site() {
 	
     info "Configuration OK."
   
-	if confirm "Reload Nginx?"; then
+	if confirm_prompt "Reload Nginx?"; then
 		if systemctl reload nginx; then
 			info "Nginx reloaded."
 		else
@@ -273,12 +273,12 @@ action_nginx_create_site() {
     fi
     if ! systemctl is-active --quiet nginx; then
         warn "Nginx is not running."
-        confirm "Continue anyway?" || return 1
+        confirm_prompt "Continue anyway?" || return 1
     fi
     if ! nginx -t 2>/dev/null; then
         warn "Nginx configuration currently has errors:"
         nginx -t 2>&1 | sed 's/^/    /'
-        confirm "Continue anyway?" || return 1
+        confirm_prompt "Continue anyway?" || return 1
     fi
 
 	section "Create Nginx Site"

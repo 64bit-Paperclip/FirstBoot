@@ -66,7 +66,7 @@ action_ufw_delete_rule() {
     echo "    $_ufw_dr_selected"
     echo ""
 
-    confirm "Are you sure?" || return 1
+    confirm_prompt "Are you sure?" || return 1
 
     # Strip 'ufw ' prefix if present and build delete command
     local _ufw_dr_cmd

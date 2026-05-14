@@ -99,7 +99,7 @@ action_fail2ban_ban_ip() {
         echo "    IP:    $_f2b_bi_ip"
         echo "    Jail:  $_f2b_bi_jail"
         echo ""
-        confirm "Are you sure?" || return 1
+        confirm_prompt "Are you sure?" || return 1
 
         _f2b_bi_ban_in_jail "$_f2b_bi_ip" "$_f2b_bi_jail"
     else
@@ -109,7 +109,7 @@ action_fail2ban_ban_ip() {
         echo "    IP:     $_f2b_bi_ip"
         echo "    Jails:  ${_f2b_bi_active[*]}"
         echo ""
-        confirm "Are you sure?" || return 1
+        confirm_prompt "Are you sure?" || return 1
 
         for _f2b_bi_jail in "${_f2b_bi_active[@]}"; do
             _f2b_bi_ban_in_jail "$_f2b_bi_ip" "$_f2b_bi_jail"
