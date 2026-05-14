@@ -1,4 +1,3 @@
-
 #!/bin/bash
 # =============================================================================
 # modules/services/fail2ban/utilities/fail2ban_input.sh

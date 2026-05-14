@@ -16,12 +16,12 @@ action_ufw_list_rules() {
     fi
 
     if ! ufw status 2>/dev/null | grep -q "Status: active"; then
-        warn "UFW is inactive -- no rules are being enforced."
+        warn "UFW is inactive -- rules exist but are not being enforced."
         echo ""
     fi
 
     local _ufw_lr_rules
-    _ufw_lr_rules=$(ufw status numbered 2>/dev/null | grep -E "^\[")
+    _ufw_lr_rules=$(ufw_get_rules)
 
     if [ -z "$_ufw_lr_rules" ]; then
         echo ""
@@ -31,17 +31,14 @@ action_ufw_list_rules() {
     fi
 
     echo ""
-    printf "    %-6s %-30s %-15s %-20s %s\n" "Num" "To" "Action" "From" "Comment"
-    printf "    %-6s %-30s %-15s %-20s %s\n" "------" "------------------------------" "---------------" "--------------------" "-------"
+    printf "    %-40s %s\n" "Rule" "Comment"
+    printf "    %-40s %s\n" "----------------------------------------" "-------"
 
     echo "$_ufw_lr_rules" | while IFS= read -r _ufw_lr_line; do
-        local _ufw_lr_num _ufw_lr_to _ufw_lr_action _ufw_lr_from _ufw_lr_comment
-        _ufw_lr_num=$(echo "$_ufw_lr_line" | awk -F'[][]' '{print $2}')
-        _ufw_lr_to=$(echo "$_ufw_lr_line" | awk '{print $2}')
-        _ufw_lr_action=$(echo "$_ufw_lr_line" | awk '{print $3}')
-        _ufw_lr_from=$(echo "$_ufw_lr_line" | awk '{print $4}')
-        _ufw_lr_comment=$(echo "$_ufw_lr_line" | grep -oP '\#\s*\K.*' || echo "")
-        printf "    %-6s %-30s %-15s %-20s %s\n" "$_ufw_lr_num" "$_ufw_lr_to" "$_ufw_lr_action" "$_ufw_lr_from" "$_ufw_lr_comment"
+        local _ufw_lr_rule _ufw_lr_comment
+        _ufw_lr_comment=$(echo "$_ufw_lr_line" | grep -oP "comment '\K[^']*" || echo "")
+        _ufw_lr_rule=$(echo "$_ufw_lr_line" | sed "s/ comment '.*'//")
+        printf "    %-40s %s\n" "$_ufw_lr_rule" "$_ufw_lr_comment"
     done
 
     echo ""

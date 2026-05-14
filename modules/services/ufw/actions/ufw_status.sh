@@ -25,15 +25,16 @@ action_ufw_status() {
         echo -e "  ${BOLD}State:${NC}          $(colorize_status "stopped")"
     fi
 
-    # --- Defaults ------------------------------------------------------------
+    # --- Default policies (read from /etc/default/ufw -- works when inactive) -
     echo ""
     echo -e "  ${BOLD}Default Policies:${NC}"
     echo ""
 
-    local _ufw_st_incoming _ufw_st_outgoing _ufw_st_routed
-    _ufw_st_incoming=$(ufw status verbose 2>/dev/null | grep "^Default:" | awk '{print $2}')
-    _ufw_st_outgoing=$(ufw status verbose 2>/dev/null | grep "^Default:" | awk '{print $4}')
-    _ufw_st_routed=$(ufw status verbose 2>/dev/null | grep "^Default:" | awk '{print $6}')
+    local _ufw_st_incoming _ufw_st_outgoing _ufw_st_routed _ufw_st_logging
+    _ufw_st_incoming=$(grep "^DEFAULT_INPUT_POLICY" /etc/default/ufw 2>/dev/null | cut -d'"' -f2)
+    _ufw_st_outgoing=$(grep "^DEFAULT_OUTPUT_POLICY" /etc/default/ufw 2>/dev/null | cut -d'"' -f2)
+    _ufw_st_routed=$(grep "^DEFAULT_FORWARD_POLICY" /etc/default/ufw 2>/dev/null | cut -d'"' -f2)
+    _ufw_st_logging=$(grep "^LOGLEVEL" /etc/default/ufw 2>/dev/null | cut -d'"' -f2)
 
     echo "    Incoming:   ${_ufw_st_incoming:-unknown}"
     echo "    Outgoing:   ${_ufw_st_outgoing:-unknown}"
@@ -43,38 +44,32 @@ action_ufw_status() {
     echo ""
     echo -e "  ${BOLD}Logging:${NC}"
     echo ""
-
-    local _ufw_st_logging
-    _ufw_st_logging=$(ufw status verbose 2>/dev/null | grep "^Logging:" | awk '{print $2}')
-    echo "    ${_ufw_st_logging:-unknown}"
-
-    if [ "$_ufw_st_active" = false ]; then
-        echo ""
-        warn "UFW is inactive -- rules are not being enforced."
-        return 0
-    fi
+    echo "    Level:      ${_ufw_st_logging:-unknown}"
 
     # --- Rules ---------------------------------------------------------------
     echo ""
-    echo -e "  ${BOLD}Active Rules:${NC}"
+    echo -e "  ${BOLD}Configured Rules:${NC}"
     echo ""
 
     local _ufw_st_rules
-    _ufw_st_rules=$(ufw status numbered 2>/dev/null | grep -E "^\[")
+    _ufw_st_rules=$(ufw_get_rules)
 
     if [ -z "$_ufw_st_rules" ]; then
         echo "    No rules configured."
     else
-        printf "    %-6s %-30s %-15s %s\n" "Num" "To" "Action" "From"
-        printf "    %-6s %-30s %-15s %s\n" "------" "------------------------------" "---------------" "----"
+        printf "    %-40s %s\n" "Rule" "Comment"
+        printf "    %-40s %s\n" "----------------------------------------" "-------"
         echo "$_ufw_st_rules" | while IFS= read -r _ufw_st_line; do
-            local _ufw_st_num _ufw_st_to _ufw_st_action _ufw_st_from
-            _ufw_st_num=$(echo "$_ufw_st_line" | awk -F'[][]' '{print $2}')
-            _ufw_st_to=$(echo "$_ufw_st_line" | awk '{print $2}')
-            _ufw_st_action=$(echo "$_ufw_st_line" | awk '{print $3}')
-            _ufw_st_from=$(echo "$_ufw_st_line" | awk '{print $4}')
-            printf "    %-6s %-30s %-15s %s\n" "$_ufw_st_num" "$_ufw_st_to" "$_ufw_st_action" "$_ufw_st_from"
+            local _ufw_st_rule _ufw_st_comment
+            _ufw_st_comment=$(echo "$_ufw_st_line" | grep -oP "comment '\K[^']*" || echo "")
+            _ufw_st_rule=$(echo "$_ufw_st_line" | sed "s/ comment '.*'//")
+            printf "    %-40s %s\n" "$_ufw_st_rule" "$_ufw_st_comment"
         done
+    fi
+
+    if [ "$_ufw_st_active" = false ]; then
+        echo ""
+        warn "UFW is inactive -- rules are not being enforced."
     fi
 
     echo ""
