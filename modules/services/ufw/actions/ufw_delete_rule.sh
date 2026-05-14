@@ -18,7 +18,7 @@ action_ufw_delete_rule() {
     # --- Requires UFW to be active -------------------------------------------
     if ! is_ufw_running; then
         warn "UFW must be active to delete rules by number."
-        confirm "Enable UFW now?" || return 1
+        confirm_prompt "Enable UFW now?" || return 1
         echo "y" | ufw enable 2>/dev/null || { error "Failed to enable UFW."; return 1; }
         info "UFW enabled."
     fi

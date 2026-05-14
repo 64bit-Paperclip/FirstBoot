@@ -101,50 +101,6 @@ ACTIONS=()
 
 
 
-# =============================================================================
-# DETECTION FUNCTIONS
-# =============================================================================
-
-# --- detect_system -----------------------------------------------------------
-detect_system() {
-    SYS_HOSTNAME=$(hostname)
-    SYS_OS=$(lsb_release -ds 2>/dev/null || echo "Unknown")
-    SYS_OS_VERSION=$(lsb_release -rs 2>/dev/null || echo "Unknown")
-    SYS_IPV4=$(curl -4 -s --max-time 5 ifconfig.me 2>/dev/null || echo "unknown")
-    SYS_IPV6=$(curl -6 -s --max-time 5 ifconfig.me 2>/dev/null || echo "unknown")
-    SYS_UPTIME=$(uptime -p 2>/dev/null | sed 's/up //' || echo "unknown")
-    SYS_RAM_TOTAL=$(free -h | awk '/^Mem:/{print $2}')
-    SYS_RAM_FREE=$(free -h | awk '/^Mem:/{print $4}')
-    SYS_DISK_TOTAL=$(df -h / | awk 'NR==2{print $2}')
-    SYS_DISK_FREE=$(df -h / | awk 'NR==2{print $4}')
-    SYS_LOAD=$(uptime | awk -F'load average:' '{print $2}' | xargs)
-    SYS_CPU_CORES=$(nproc 2>/dev/null || echo "unknown")
-}
-
-# --- detect_session ----------------------------------------------------------
-detect_session() {
-    CURRENT_IP=$(who am i | awk '{print $5}' | tr -d '()')
-    [ -z "$CURRENT_IP" ] && CURRENT_IP="unknown"
-
-
-}
 
 
 
-
-
-# =============================================================================
-# EXPORTS
-# =============================================================================
-
-
-export FIRSTBOOT_COMPLETE FIRSTBOOT_LAST_RUN
-export CURRENT_IP ADMIN_USER SERVER_NAME SERVER_HOSTNAME
-export SYS_HOSTNAME SYS_OS SYS_OS_VERSION SYS_IPV4 SYS_IPV6
-export SYS_UPTIME SYS_RAM_TOTAL SYS_RAM_FREE SYS_DISK_TOTAL SYS_DISK_FREE
-export SYS_LOAD SYS_CPU_CORES
-export SERVICE_GROUPS SERVICES ACTIONS
-
-
-
-export -f detect_system detect_session

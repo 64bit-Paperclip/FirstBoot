@@ -114,9 +114,7 @@ source_actions
 draw_banner
 log "info" "FirstBoot Started"
 
-width=$(tput cols)
-height=$(tput lines)
-echo "Width: $width, Height: $height"
+
 
 # --- Status ------------------------------------------------------------------
 show_status
@@ -124,6 +122,7 @@ show_status
 MAIN_MENU_OPTIONS=(
     "---|System Setup"
     "Harden System|show_status"
+    "Create Super User|show_status"
     "---|System Management"
     "System Status|show_status"
     "Manage Runtimes|show_status"
@@ -135,5 +134,6 @@ MAIN_MENU_OPTIONS=(
     "Settings|show_status"
 	"View Logs|show_status"
 )
+
 command_menu MAIN_MENU_OPTIONS "Main Menu"
 
