@@ -17,7 +17,7 @@ action_ufw_delete_rule() {
 
     # --- Get rules -----------------------------------------------------------
     local _ufw_dr_raw
-    _ufw_dr_raw=$(_ufw_get_rules)
+    _ufw_dr_raw=$(ufw_get_rules)
 
     if [ -z "$_ufw_dr_raw" ]; then
         info "No rules configured."
