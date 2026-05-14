@@ -114,6 +114,10 @@ source_actions
 draw_banner
 log "info" "FirstBoot Started"
 
+width=$(tput cols)
+height=$(tput lines)
+echo "Width: $width, Height: $height"
+
 # --- Status ------------------------------------------------------------------
 show_status
 
