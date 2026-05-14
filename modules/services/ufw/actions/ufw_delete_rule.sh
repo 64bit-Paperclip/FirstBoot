@@ -61,7 +61,7 @@ action_ufw_delete_rule() {
     echo "    $_ufw_dr_selected"
     echo ""
 
-    confirm_pormpt "Are you sure?" || return 1
+    confirm_prompt "Are you sure?" || return 1
 
     echo "y" | ufw delete "$_ufw_dr_choice" 2>/dev/null || { error "Failed to delete rule."; return 1; }
     info "Rule deleted successfully."
