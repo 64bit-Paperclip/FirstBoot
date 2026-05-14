@@ -11,7 +11,7 @@ action_unattended_upgrades_status() {
     section "Unattended Upgrades Status"
 
     # --- Installation --------------------------------------------------------
-    if ! is_unattended_installed; then
+    if ! is_unattended_upgrades_installed; then
         echo -e "  ${BOLD}State:${NC}          $(colorize_status "not installed")"
         return 0
     fi

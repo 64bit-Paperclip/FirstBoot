@@ -122,7 +122,7 @@ show_status
 MAIN_MENU_OPTIONS=(
     "---|System Setup"
     "Harden System|show_status"
-    "Create Super User|show_status"
+    "Create Super User|action_create_superuser"
     "---|System Management"
     "System Status|show_status"
     "Manage Runtimes|show_status"

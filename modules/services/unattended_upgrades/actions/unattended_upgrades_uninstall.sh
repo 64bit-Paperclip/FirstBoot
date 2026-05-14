@@ -9,7 +9,7 @@
 # --- Action ------------------------------------------------------------------
 action_unattended_uninstall() {
 
-    if ! is_unattended_installed; then
+    if ! is_unattended_upgrades_installed; then
         warn "Unattended Upgrades is not installed."
         return 1
     fi
