@@ -45,7 +45,7 @@ _ufw_generate_menu_options() {
     fi
 
     _out+=("Status|action_ufw_status")
-    _out+=("Reset UFW|action_ufw_reset")
+    _out+=("Reload UFW|action_ufw_reload")
     _out+=("---|")
     _out+=("List Rules|action_ufw_list_rules")
     _out+=("Allow Port|action_ufw_allow_port")
