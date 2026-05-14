@@ -97,7 +97,7 @@ action_ufw_allow_ip() {
     echo "    $  $_ufw_ai_rule"
     echo ""
 
-    confirm "Apply this rule?" || return 1
+    confirm_prompt "Apply this rule?" || return 1
 
     eval "$_ufw_ai_rule" || { error "Failed to add rule."; return 1; }
     info "Rule added successfully."

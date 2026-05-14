@@ -106,7 +106,7 @@ action_ufw_deny_port() {
     echo "    $  $_ufw_dp_rule"
     echo ""
 
-    confirm "Apply this rule?" || return 1
+    confirm_prompt "Apply this rule?" || return 1
 
     eval "$_ufw_dp_rule" || { error "Failed to add rule."; return 1; }
     info "Rule added successfully."

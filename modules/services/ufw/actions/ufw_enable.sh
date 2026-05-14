@@ -20,7 +20,7 @@ action_ufw_enable() {
         return 1
     fi
 
-    confirm "Enable UFW? This will activate all configured rules." || return 1
+    confirm_prompt "Enable UFW? This will activate all configured rules." || return 1
 
     echo "y" | ufw enable 2>/dev/null || { error "Failed to enable UFW."; return 1; }
     info "UFW enabled."

@@ -95,7 +95,7 @@ action_ufw_deny_ip() {
     echo "    $  $_ufw_di_rule"
     echo ""
 
-    confirm "Apply this rule?" || return 1
+    confirm_prompt "Apply this rule?" || return 1
 
     eval "$_ufw_di_rule" || { error "Failed to add rule."; return 1; }
     info "Rule added successfully."

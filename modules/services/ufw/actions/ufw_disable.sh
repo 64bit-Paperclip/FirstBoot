@@ -21,7 +21,7 @@ action_ufw_disable() {
     fi
 
     warn "Disabling UFW will stop all firewall protection."
-    confirm "Are you sure you want to disable UFW?" || return 1
+    confirm_prompt "Are you sure you want to disable UFW?" || return 1
 
     ufw disable 2>/dev/null || { error "Failed to disable UFW."; return 1; }
     info "UFW disabled."
