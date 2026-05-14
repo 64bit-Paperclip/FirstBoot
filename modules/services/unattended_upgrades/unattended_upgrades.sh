@@ -35,7 +35,7 @@ _unattended_upgrades_generate_menu_options() {
     local -n _out="$1"
     _out=()
 
-    if is_unattended_installed; then
+    if is_unattended_upgrades_installed; then
         _out+=("Uninstall|action_unattended_uninstall")
     else
         _out+=("Install|action_unattended_install")
